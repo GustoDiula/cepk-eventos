@@ -1,16 +1,18 @@
 // Grade mensal do calendário (F-16) — dados do FRONT.
 //
-// Dois conjuntos, escolhidos por data-calendario no HTML:
-//   "feriados"  → feriados oficiais do Paraná — ANO 2026 COMPLETO (D-019).
-//                 Fonte oficial: Governo do Paraná — Calendário Anual 2026 da
-//                 SEAP (administracao.pr.gov.br/Pagina/Calendario-Anual) e
-//                 Feriados Civis (turismo.pr.gov.br/Pagina/Feriados-Civis-e-Datas-Comemorativas).
-//                 Inclui 19/12 (feriado ESTADUAL da Emancipação do Paraná).
-//   "provas"    → provas e atividades da turma 1º Ano A — datas FICTÍCIAS,
-//                 ficam ao lado do rótulo de marcação (RF15/RNF10).
+//Funcionalidades (D-021):
+//  • Setas ◀ ▶ navegam entre os meses com dados, limitadas ao intervalo do
+//    conjunto; botão "hoje" volta ao mês corrente.
+//  • Dias, marcas e cartões ANTES de hoje ganham estado "passado" (cinza +
+//    "Já passou") calculado na hora da abertura — vira o dia, a página muda.
 //
-// O mês renderizado é o mês corrente na hora de abrir a página — cada dia o
-// calendário já nasce atualizado, sem intervenção.
+// Conjuntos, escolhidos por data-calendario no HTML:
+//   "feriados" → feriados OFICIAIS do Paraná, ano 2026 completo (D-019).
+//                Fonte oficial: Governo do Paraná — Calendário Anual 2026
+//                (administracao.pr.gov.br/Pagina/Calendario-Anual) e Feriados
+//                Civis (turismo.pr.gov.br/Pagina/Feriados-Civis-e-Datas-Comemorativas).
+//   "provas"   → provas e atividades da turma 1º Ano A — datas FICTÍCIAS
+//                (RF15/RNF10).
 
 (function () {
   'use strict';
@@ -58,41 +60,117 @@
 
   function hoje() {
     const agora = new Date();
-    return { ano: agora.getFullYear(), mes: agora.getMonth(), dia: agora.getDate() };
+    // meia-noite de hoje: o que for ANTES disto já passou
+    return new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
   }
 
-  // Constrói as células (7 colunas) do mês corrente, domingo primeiro.
+  function quebrarData(iso) {
+    const d = new Date(iso + 'T00:00:00');
+    return { ano: d.getFullYear(), mes: d.getMonth(), dia: d.getDate() };
+  }
+
+  // conector do conjunto: intervalo de meses com dados (para limitar as setas)
+  function intervaloMeses(eventos) {
+    let min = null;
+    let max = null;
+    for (const ev of eventos) {
+      const { ano, mes } = quebrarData(ev.data);
+      const chave = ano * 12 + mes;
+      if (min === null || chave < min) min = chave;
+      if (max === null || chave > max) max = chave;
+    }
+    return { min, max };
+  }
+
   function construirCelulas(ano, mes, eventos) {
     const primeiro = new Date(ano, mes, 1);
     const limite = new Date(ano, mes + 1, 0).getDate();
     const celulas = [];
+    const passagem = hoje();
 
     for (let vazio = 0; vazio < primeiro.getDay(); vazio++) {
       celulas.push({ dia: null });
     }
     for (let dia = 1; dia <= limite; dia++) {
+      const dataCelula = new Date(ano, mes, dia);
       const marcados = eventos.filter((ev) => {
-        const data = new Date(ev.data + 'T00:00:00');
-        return data.getFullYear() === ano && data.getMonth() === mes && data.getDate() === dia;
-      });
-      celulas.push({ dia, eventos: marcados });
+        const { ano: anoEv, mes: mesEv, dia: diaEv } = quebrarData(ev.data);
+        return anoEv === ano && mesEv === mes && diaEv === dia;
+      }).map((ev) => ({ ...ev, passou: dataCelula < passagem }));
+      celulas.push({ dia, eventos: marcados, passou: dataCelula < passagem });
     }
     while (celulas.length % 7 !== 0) celulas.push({ dia: null });
     return celulas;
   }
 
-  function construir(alvo, conjunto) {
+  // Barra de navegação: ◀ título ▶ + "hoje"
+  function construirNavegacao(ano, mes, limites, reRender) {
+    const barra = document.createElement('div');
+    barra.className = 'nav-mes';
+
+    const anterior = document.createElement('button');
+    anterior.className = 'seta-mes';
+    anterior.type = 'button';
+    anterior.textContent = '◀';
+    anterior.setAttribute('aria-label', 'Mês anterior');
+    if (limites.min !== null && ano * 12 + mes - 1 < limites.min) anterior.disabled = true;
+    anterior.addEventListener('click', () => reRender(ano, mes - 1));
+
+    const titulo = document.createElement('span');
+    titulo.className = 'titulo-mes';
+    titulo.textContent = `${MESES[mes]} de ${ano}`;
+
+    const proximo = document.createElement('button');
+    proximo.className = 'seta-mes';
+    proximo.type = 'button';
+    proximo.textContent = '▶';
+    proximo.setAttribute('aria-label', 'Mês próximo');
+    if (limites.max !== null && ano * 12 + mes + 1 > limites.max) proximo.disabled = true;
+    proximo.addEventListener('click', () => reRender(ano, mes + 1));
+
+    const h = new Date();
+    const noMesCorrente = ano === h.getFullYear() && mes === h.getMonth();
+
+    const hojeBtn = document.createElement('button');
+    hojeBtn.className = 'hoje-mes';
+    hojeBtn.type = 'button';
+    hojeBtn.textContent = 'hoje';
+    hojeBtn.hidden = noMesCorrente;
+    hojeBtn.addEventListener('click', () => reRender(h.getFullYear(), h.getMonth()));
+
+    barra.appendChild(anterior);
+    barra.appendChild(titulo);
+    barra.appendChild(proximo);
+    barra.appendChild(hojeBtn);
+    return barra;
+  }
+
+  function construir(alvo, conjunto, ano, mes) {
     if (!alvo) return;
     const eventos = CONJUNTOS[conjunto] || [];
-    const h = hoje();
-    const titulo = `${MESES[h.mes]} de ${h.ano}`;
+    const limites = intervaloMeses(eventos);
+    const h = new Date();
+    const tituloMes = `${MESES[mes]} de ${ano}`;
+
+    alvo.replaceChildren();
+
+    alvo.appendChild(construirNavegacao(ano, mes, limites, (novoAno, novoMes) => {
+      // normaliza mês fora do intervalo (p. ex. 0-1 → dez/2025)
+      const dataNorm = new Date(novoAno, novoMes, 1);
+      let chave = dataNorm.getFullYear() * 12 + dataNorm.getMonth();
+      if (limites.min !== null && chave < limites.min) chave = limites.min;
+      if (limites.max !== null && chave > limites.max) chave = limites.max;
+      construir(alvo, conjunto, Math.floor(chave / 12), chave % 12);
+    }));
+
+    const passar = hoje();
 
     const tabela = document.createElement('table');
     tabela.className = 'grade-calendario';
 
     const caption = document.createElement('caption');
     caption.textContent =
-      `${titulo} — ${conjunto === 'feriados' ? 'feriados oficiais do Paraná (2026)' : 'calendário da turma (fictício)'}`;
+      `${tituloMes} — ${conjunto === 'feriados' ? 'feriados oficiais do Paraná (2026)' : 'calendário da turma (fictício)'}`;
     tabela.appendChild(caption);
 
     const thead = document.createElement('thead');
@@ -107,7 +185,7 @@
     tabela.appendChild(thead);
 
     const tbody = document.createElement('tbody');
-    const celulas = construirCelulas(h.ano, h.mes, eventos);
+    const celulas = construirCelulas(ano, mes, eventos);
     let linha;
     celulas.forEach((celula, indice) => {
       if (indice % 7 === 0) {
@@ -120,17 +198,19 @@
         td.setAttribute('aria-hidden', 'true');
         td.innerHTML = '&nbsp;';
       } else {
+        if (celula.passou) td.classList.add('passado');
+        if (celula.dia === h.getDate() && mes === h.getMonth() && ano === h.getFullYear()) {
+          td.classList.add('hoje');
+        }
         const numero = document.createElement('span');
         numero.className = 'dia-num';
         numero.textContent = String(celula.dia);
         td.appendChild(numero);
-        if (celula.dia === h.dia) td.classList.add('hoje');
         for (const ev of celula.eventos) {
           const marca = document.createElement('span');
-          // o sufixo de classe sai do próprio tipo (feriado/facultativo/prova...)
-          marca.className = `ev ev-${ev.tipo}`;
-          marca.title = ev.titulo;
-          marca.textContent = ev.titulo;
+          marca.className = `ev ev-${ev.tipo}` + (ev.passou ? ' ev-passado' : '');
+          marca.title = (ev.passou ? 'Já passou — ' : '') + ev.titulo;
+          marca.textContent = (ev.passou ? '✓ ' : '') + ev.titulo;
           td.appendChild(marca);
         }
       }
@@ -138,11 +218,30 @@
     });
     tabela.appendChild(tbody);
 
-    alvo.replaceChildren(tabela);
+    alvo.appendChild(tabela);
   }
 
-  // Uma instância por elemento com data-calendario.
+  // Marca cartões estáticos com data-feriado="2026-…" como "Já passou".
+  function marcarCartoesPassados() {
+    const passagem = hoje();
+    document.querySelectorAll('[data-feriado]').forEach((cartao) => {
+      const { ano, mes, dia } = quebrarData(cartao.getAttribute('data-feriado'));
+      const data = new Date(ano, mes, dia);
+      if (data < passagem && !cartao.classList.contains('passado')) {
+        cartao.classList.add('passado');
+        const selo = document.createElement('span');
+        selo.className = 'selo selo--facultativo selo--passado';
+        selo.textContent = 'Já passou';
+        cartao.appendChild(selo);
+      }
+    });
+  }
+
+  // Uma instância por elemento com data-calendario (inicia no mês corrente).
   document.querySelectorAll('[data-calendario]').forEach((alvo) => {
-    construir(alvo, alvo.getAttribute('data-calendario'));
+    const h = new Date();
+    construir(alvo, alvo.getAttribute('data-calendario'), h.getFullYear(), h.getMonth());
   });
+
+  document.addEventListener('DOMContentLoaded', marcarCartoesPassados);
 })();

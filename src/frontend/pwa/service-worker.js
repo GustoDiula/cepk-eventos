@@ -7,7 +7,7 @@
 //  3) o modo offline é somente leitura: a interface bloqueia envios (js/offline.js + js/api.js);
 //  4) para publicar uma nova versão do shell: incremente VERSAO abaixo.
 
-const VERSAO = 'cepk-shell-v3';
+const VERSAO = 'cepk-shell-v4';
 
 const SHELL = [
   '/',

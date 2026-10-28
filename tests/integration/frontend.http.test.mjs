@@ -81,3 +81,37 @@ test('sessão de demonstração: nada é enviado pela rede e senha nunca é arma
     await new Promise((resolver) => servidor.close(resolver));
   }
 });
+
+test('calendário: navegação de meses e estado "passado" presentes (D-021)', async () => {
+  const app = require('../../src/backend/app.js');
+  const servidor = http.createServer(app);
+  await new Promise((resolver) => servidor.listen(0, '127.0.0.1', resolver));
+  try {
+    const { port } = servidor.address();
+    const base = `http://127.0.0.1:${port}`;
+
+    const js = await (await fetch(`${base}/js/calendario.js`)).text();
+    // navegação: barra ◀ ▶ + botão "hoje"
+    assert.ok(js.includes("'nav-mes'"), 'barra de navegação ausente');
+    assert.ok(js.includes("'seta-mes'"), 'setas ◀ ▶ ausentes');
+    assert.ok(js.includes("'hoje-mes'"), 'botão "hoje" ausente');
+    assert.ok(js.includes('limites.min') && js.includes('limites.max'), 'limites por intervalo do conjunto ausentes');
+    // estado passado: calculado na abertura, não congelado
+    assert.ok(js.includes("Já passou"), 'mensagem "Já passou" ausente');
+    assert.ok(js.includes("data-feriado"), 'marcação de cartões por data ausente');
+
+    const home = await (await fetch(`${base}/`)).text();
+    const cartoes = home.match(/data-feriado="2026-\d{2}-\d{2}"/g) || [];
+    assert.ok(cartoes.length >= 14, `esperados ≥14 cartões de feriado com data, há ${cartoes.length}`);
+
+    const css = await (await fetch(`${base}/css/main.css`)).text();
+    for (const classe of ['.nav-mes', '.seta-mes', '.hoje-mes', '.ev-passado', '.selo--passado']) {
+      assert.ok(css.includes(classe), `estilo ${classe} ausente no CSS`);
+    }
+
+    const sw = await (await fetch(`${base}/pwa/service-worker.js`)).text();
+    assert.ok(sw.includes('cepk-shell-v4'), 'service worker deve estar na versão cepk-shell-v4');
+  } finally {
+    await new Promise((resolver) => servidor.close(resolver));
+  }
+});

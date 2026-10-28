@@ -614,6 +614,77 @@ html.com-sessao-demo .faixa-sessao {
 .legenda .ponto--atividade   { background: #2fbf79; }
 
 /* ------------------------------------------------------------
+   Calendário — navegação de meses e estado "passado" (D-021)
+   ------------------------------------------------------------ */
+.nav-mes {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.seta-mes {
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: #fff;
+  color: var(--cor-primaria);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.35rem 0.65rem;
+  cursor: pointer;
+}
+.seta-mes:hover:not(:disabled),
+.seta-mes:focus-visible {
+  background: var(--cor-primaria-clara);
+  color: #fff;
+}
+.seta-mes:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.titulo-mes {
+  font-weight: 700;
+  font-size: 1.05rem;
+  min-width: 8.5rem;
+  text-align: center;
+}
+.hoje-mes {
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: #fff;
+  color: var(--cor-neutra);
+  font-size: 0.8rem;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+}
+.hoje-mes:hover,
+.hoje-mes:focus-visible {
+  border-color: var(--cor-acento);
+  color: var(--cor-primaria);
+}
+
+/* Dias/marcas/cartões anteriores a hoje: cinza, sem enganar (D-021) */
+.grade-calendario td.passado .dia-num {
+  color: var(--cor-neutra);
+}
+.grade-calendario td.passado {
+  background: #f6f7f8;
+}
+.grade-calendario .ev-passado {
+  opacity: 0.6;
+  filter: grayscale(0.6);
+}
+.cartao-evento.passado {
+  opacity: 0.65;
+}
+.cartao-evento.passado h3 {
+  color: var(--cor-neutra);
+}
+.selo--passado {
+  background: #eef1f4;
+  color: var(--cor-neutra);
+}
+
+/* ------------------------------------------------------------
    Formulário de login de demonstração (D-018)
    ------------------------------------------------------------ */
 .form-login {
