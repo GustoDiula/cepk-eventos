@@ -1,9 +1,10 @@
 # Não versionar dependências
 node_modules/
 
-# Não versionar segredos e variáveis de ambiente (sempre usar o modelo .env.example)
+# Não versionar segredos e variáveis de ambiente (SEMPRE usar o modelo .env.example)
 .env
 .env.*
+!.env.example
 
 # Logs e arquivos temporários
 *.log
