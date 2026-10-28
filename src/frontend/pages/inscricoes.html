@@ -12,8 +12,7 @@
     <a class="marca" href="/">CEPK Eventos<small>Colégio Estadual Presidente Kennedy</small></a>
     <nav>
       <a href="/">Início</a>
-      <a href="/#turmas">Turmas</a>
-      <a href="/calendario.html">Calendário</a>
+      <a href="/turma.html">Turmas</a>
       <a href="/inscricoes.html" aria-current="page">Minhas inscrições</a>
       <a href="/sobre.html">Sobre</a>
     </nav>
@@ -22,9 +21,9 @@
 
   <main class="container">
     <h2>Minhas inscrições</h2>
-    <p class="aviso">Inscrições fictícias de demonstração — a lista real chega da
-       API na etapa 7 (RF07/RF08) e exige login REAL (F-2); inscrição só vale
-       com confirmação do servidor (RN08).</p>
+    <p class="aviso">Inscrições FICTÍCIAS de demonstração — a lista real aparecerá
+       quando o sistema de inscrições estiver pronto no servidor. Por regra,
+       uma inscrição só vale quando o próprio servidor a confirma.</p>
 
     <!-- Abas (protótipo): alternância simples, conteúdo estático: dados fictícios -->
     <div class="abas" role="tablist" aria-label="Filtro de inscrições">
@@ -41,13 +40,13 @@
           <span class="botoes-acao">
             <button class="secundario" type="button" disabled>Cancelar inscrição</button>
           </span>
-          <small>O cancelamento real pela própria interface é da etapa 7 (decisão F-5).</small>
+          <small>O cancelamento pela própria interface será ativado junto com o servidor de inscrições.</small>
         </li>
         <li class="cartao-evento">
           <h3>Feira de profissões (fictícia)</h3>
           <span class="meta">05/12/2026, 09:00 — Ginásio (fictício)</span>
           <span class="estado estado--analise">Em análise</span>
-          <p><small>O servidor confirma a análise (vagas/prazo checados, D-015).</small></p>
+          <p><small>A "análise" é feita pelo servidor: ele checa vagas e prazo antes de confirmar.</small></p>
         </li>
       </ul>
     </div>
@@ -72,8 +71,7 @@
 
   <nav class="navegacao-inferior" aria-label="Navegação inferior (celular)">
     <a href="/"><strong>⌂</strong>Início</a>
-    <a href="/calendario.html"><strong>▣</strong>Calendário</a>
-    <a href="/#turmas"><strong>☰</strong>Turmas</a>
+    <a href="/turma.html"><strong>☰</strong>Turmas</a>
     <a href="/inscricoes.html" aria-current="page"><strong>✓</strong>Inscrições</a>
     <a href="/sobre.html"><strong>ℹ</strong>Sobre</a>
   </nav>
@@ -83,19 +81,33 @@
   <footer class="rodape">CEPK Eventos — protótipo visual (redesign 2026-10-28).</footer>
 
   <script>
-    // Alternância das abas (visual). Dados reais: etapa 7.
+    // Abas Ativas/Histórico: funcionam com clique E com as setas ← → do teclado
+    // (navegação acessível; o foco anda entre as abas e seleciona a focada).
     document.addEventListener('DOMContentLoaded', function () {
-      var pares = [
-        { botao: document.querySelectorAll('.abas [role="tab"]')[0], painel: document.getElementById('painelAtivas') },
-        { botao: document.querySelectorAll('.abas [role="tab"]')[1], painel: document.getElementById('painelHistorico') },
-      ];
-      pares.forEach(function (par) {
-        if (!par.botao || !par.painel) return;
-        par.botao.addEventListener('click', function () {
-          pares.forEach(function (outro) {
-            outro.botao.setAttribute('aria-selected', outro === par ? 'true' : 'false');
-            outro.painel.hidden = outro !== par;
-          });
+      var abas = Array.prototype.slice.call(document.querySelectorAll('.abas [role="tab"]'));
+
+      function selecionar(aba) {
+        abas.forEach(function (outra) {
+          var ativa = outra === aba;
+          outra.setAttribute('aria-selected', ativa ? 'true' : 'false');
+          outra.tabIndex = ativa ? 0 : -1;
+          var painel = document.getElementById(outra.getAttribute('aria-controls'));
+          if (painel) painel.hidden = !ativa;
+        });
+      }
+
+      abas.forEach(function (aba, indice) {
+        if (!aba) return;
+        aba.tabIndex = indice === 0 ? 0 : -1;
+        aba.addEventListener('click', function () { selecionar(aba); });
+        aba.addEventListener('keydown', function (ev) {
+          var direcao = ev.key === 'ArrowRight' ? 1 : (ev.key === 'ArrowLeft' ? -1 : 0);
+          if (!direcao) return;
+          ev.preventDefault();
+          var atual = abas.indexOf(aba);
+          var nova = abas[(atual + direcao + abas.length) % abas.length];
+          nova.focus();
+          selecionar(nova);
         });
       });
     });

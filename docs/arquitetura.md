@@ -170,6 +170,37 @@ Entidades previstas (nomes/tipos exatos só no plano de desenvolvimento):
 | `inscricoes` | uma por aluno por evento | RN07; cancelamento = F-5 |
 | `registro_auditoria` | quem/ quando publicou, editou, cancelou, inscreveu | RNF12 |
 
+### 5A. Perfis de acesso e permissões (D-023 — proposta aguardando banco e login real)
+
+Pedido do autor (28/10/2026, itens 5 e 6): a página **Turmas** deve apresentar
+conteúdo diferente por perfil. Isso exige back-end: sem banco (etapa 2) e sem login
+real (etapa 4) NÃO há como diferenciar de verdade — nada disto pode ser maquete
+fictícia ("não invente vínculos nem usuários administrativos fictícios").
+
+**Vínculos necessários no banco (extensão do esboço acima):**
+
+| Estrutura proposta | Para quê |
+|---|---|
+| `vinculos_aluno_turma` (existe) | aluno vê/só a própria turma — RN01, isolamento no servidor |
+| `vinculos_professor_turma` (nova) | professor vê/administra APENAS as turmas em que é docente registrado |
+| `vinculos_pedagogo_turmas` (nova) | pedagogo enxerga o CONJUNTO de turmas sob sua responsabilidade (definido por registro no banco — nunca pelo e-mail) |
+| `direcao_escolar` (nova) | direção com permissão atribuída vê TODAS as turmas |
+| `papeis` por vínculo | `aluno` · `professor` · `pedagogo` · `direcao` — a sessão carrega papéis/vínculos carregados do banco no login |
+
+**Matriz de permissões (validadas NO BACKEND, endpoint por endpoint):**
+
+| Perfil | Consultar turmas | Publicar/editar/cancelar evento | Inscrições |
+|---|---|---|---|
+| Aluno | só a própria | — | participar/cancelar a própria |
+| Professor | as turmas de docência | nas turmas de docência (F-11: se autorizado) | ver listas da sua turma |
+| Pedagogo | o conjunto sob sua responsabilidade | conforme permissão atribuída | conforme permissão |
+| Direção | todas do colégio | conforme permissão (F-12: alcance de terceiros) | conforme permissão |
+
+**Na interface (depois que a sessão real existir):** a página Turmas recebe do
+servidor o próprio conjunto de turmas do usuário — o frontend só RENDERIZA o que
+o backend autorizou (nunca decide por conta própria). Ação administrativa aparece
+apenas para quem tem permissão real.
+
 ## 6. Configuração dos ambientes
 
 | Ambiente | Onde roda | Banco | Segredos |

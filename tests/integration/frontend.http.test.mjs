@@ -13,7 +13,6 @@ const caminhos = [
   { rota: '/evento.html', tipo: 'text/html', trecho: 'detalhe-evento' },
   { rota: '/inscricoes.html', tipo: 'text/html', trecho: 'Minhas inscrições' },
   { rota: '/sobre.html', tipo: 'text/html', trecho: 'Sobre o CEPK Eventos' },
-  { rota: '/calendario.html', tipo: 'text/html', trecho: 'Calendário da turma' },
   { rota: '/css/main.css', tipo: 'text/css', trecho: '.cartao-evento' },
   { rota: '/js/calendario.js', tipo: 'javascript', trecho: 'data-calendario' },
   { rota: '/js/sessao.js', tipo: 'javascript', trecho: 'cepkSessaoDemo' },
@@ -110,7 +109,40 @@ test('calendário: navegação de meses e estado "passado" presentes (D-021)', a
     }
 
     const sw = await (await fetch(`${base}/pwa/service-worker.js`)).text();
-    assert.ok(sw.includes('cepk-shell-v4'), 'service worker deve estar na versão cepk-shell-v4');
+    assert.ok(sw.includes('cepk-shell-v5'), 'service worker deve estar na versão cepk-shell-v5');
+  } finally {
+    await new Promise((resolver) => servidor.close(resolver));
+  }
+});
+
+test('interface sem siglas técnicas e navegação reorganizada (pedido 28/10/2026)', async () => {
+  const app = require('../../src/backend/app.js');
+  const servidor = http.createServer(app);
+  await new Promise((resolver) => servidor.listen(0, '127.0.0.1', resolver));
+  try {
+    const { port } = servidor.address();
+    const base = `http://127.0.0.1:${port}`;
+    for (const rota of ['/', '/login.html', '/turma.html', '/evento.html', '/inscricoes.html', '/sobre.html']) {
+      const pagina = await (await fetch(`${base}${rota}`)).text();
+      // verifica apenas o TEXTO VISÍVEL: remove scripts, estilos, comentários e tags
+      const visivel = pagina
+        .replace(/<script[\s\S]*?<\/script>/g, '')
+        .replace(/<style[\s\S]*?<\/style>/g, '')
+        .replace(/<!--[\s\S]*?-->/g, '')
+        .replace(/<[^>]+>/g, '');
+      assert.doesNotMatch(visivel, /\bRF\d\d|RN\d\d|D-\d\d\d|F-\d\b|RNF\d|etapa\s+\d/i,
+        `sigla técnica visível em ${rota}`);
+      // a página de calendário foi fundida na turma (D-022): nenhum link pode sobrar
+      assert.ok(!pagina.includes('calendario.html'), `link para calendario.html restou em ${rota}`);
+      // navegação nova: Turmas direto para a página da turma
+      assert.ok(pagina.includes('href="/turma.html"'), `link Turmas para /turma.html ausente em ${rota}`);
+    }
+    // página inicial: sem a seção de turmas repetida
+    const home = await (await fetch(`${base}/`)).text();
+    assert.ok(!home.includes('grade-turmas'), 'página inicial deve ficar sem a seção de turmas');
+    // calendario.html foi excluída: não pode mais responder
+    const extinta = await fetch(`${base}/calendario.html`);
+    assert.equal(extinta.status, 404, 'calendario.html deveria estar excluída (404)');
   } finally {
     await new Promise((resolver) => servidor.close(resolver));
   }

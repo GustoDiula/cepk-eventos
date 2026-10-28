@@ -56,12 +56,41 @@ Leia-o integralmente antes de qualquer alteração.
 
 ```text
 cepk-eventos/
-├── AGENTS.md          ← este arquivo
-└── docs/
-    ├── requisitos.md   ← requisitos funcionais, não funcionais e regras de negócio
-    ├── arquitetura.md  ← arquitetura proposta e organização futura de pastas
-    └── decisoes.md     ← registro de decisões técnicas e pendências
+├── AGENTS.md                      ← este arquivo
+├── package.json / package-lock.json
+├── .env.example                   ← modelo de variáveis (NUNCA o .env real)
+├── .gitignore
+├── scripts/
+│   └── gerar-icones.ps1           ← gera os ícones do PWA
+├── docs/
+│   ├── requisitos.md              ← requisitos funcionais/não funcionais e regras de negócio
+│   ├── arquitetura.md             ← arquitetura (v2.0) + §5A perfis e permissões
+│   ├── decisoes.md                ← registro de decisões (D-001..D-023)
+│   ├── modelo-de-dados.md / api.md / pwa.md / plano-de-desenvolvimento.md
+├── src/
+│   ├── backend/
+│   │   ├── app.js                 ← Express: rotas estáticas + health + SW-Allowed
+│   │   ├── server.js · config/env.js
+│   │   ├── routes/health.routes.js · middlewares/errorHandler.js
+│   │   └── controllers/ · db/ · services/   (vazios: etapas 2–7 pendentes)
+│   └── frontend/
+│       ├── pages/
+│       │   ├── index.html         ← Início: feriados oficiais do PR 2026 + grade geral
+│       │   ├── turma.html         ← Turmas: calendário e atividades da turma (única)
+│       │   ├── inscricoes.html · evento.html
+│       │   ├── login.html         ← login de demonstração (D-018)
+│       │   └── sobre.html
+│       ├── css/main.css
+│       ├── js/ (api.js · calendario.js · offline.js · sessao.js)
+│       └── pwa/ (manifest.webmanifest · service-worker.js · icons/ 192·512·maskable)
+└── tests/
+    ├── unit/ (backend.health · pwa.manifest)
+    ├── integration/frontend.http.test.mjs
+    └── e2e/ (roteiro.frontend.md · roteiro.pwa.md) · *.gitkeep
 ```
+
+> Atualização 2026-10-28 (pedido do autor): a página `calendario.html` foi excluída
+> (conteúdo fundido em `turma.html` — D-022). Seção mantida por este arquivo.
 
 > Atualize esta seção sempre que a estrutura do repositório mudar
 > (explique a alteração ao autor antes, conforme a regra 2).
