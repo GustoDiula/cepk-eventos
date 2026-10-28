@@ -7,11 +7,14 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 
 const caminhos = [
-  { rota: '/', tipo: 'text/html', trecho: '<h1>CEPK Eventos</h1>' },
+  { rota: '/', tipo: 'text/html', trecho: '<title>CEPK Eventos</title>' },
   { rota: '/login.html', tipo: 'text/html', trecho: 'F-2' },
-  { rota: '/turma.html', tipo: 'text/html', trecho: 'Turma exemplo' },
+  { rota: '/turma.html', tipo: 'text/html', trecho: 'Turma 1º Ano A' },
   { rota: '/evento.html', tipo: 'text/html', trecho: 'detalhe-evento' },
+  { rota: '/inscricoes.html', tipo: 'text/html', trecho: 'Minhas inscrições' },
+  { rota: '/sobre.html', tipo: 'text/html', trecho: 'Sobre o CEPK Eventos' },
   { rota: '/css/main.css', tipo: 'text/css', trecho: '.cartao-evento' },
+  { rota: '/js/calendario.js', tipo: 'javascript', trecho: 'data-calendario' },
   { rota: '/pwa/manifest.webmanifest', tipo: 'json', trecho: '"start_url"' },
   { rota: '/pwa/icons/icon-192.png', tipo: 'image/png', trecho: null },
   { rota: '/pwa/icons/icon-512.png', tipo: 'image/png', trecho: null },

@@ -1,16 +1,21 @@
 /* ============================================================
-   CEPK Eventos — estilo base (etapa 3)
-   Mobile-first; media queries em 768px e 1440px (CA-07/RNF01).
-   Sem frameworks — conforme arquitetura v2.0 (HTML/CSS/JS puros).
+   CEPK Eventos — estilo base (redesign conforme protótipo, 2026-10-28)
+   Mobile-first: <768px usa navegação inferior fixa; ≥768px usa sidebar.
+   Media queries em 768px e 1440px (CA-07/RNF01). Sem frameworks —
+   arquitetura v2.0 (HTML/CSS/JS puros).
    ============================================================ */
 
 :root {
   --cor-tinta: #1c2430;
-  --cor-fundo: #f7f8fa;
+  --cor-fundo: #f2f5f9;
   --cor-primaria: #0a1f44;
+  --cor-primaria-clara: #17315e;
   --cor-acento: #1b6ca8;
   --cor-aviso: #7a4900;
   --cor-borda: #d7dce4;
+  --cor-ok: #1e7a3f;        /* exige inscrição / confirmada */
+  --cor-opcional: #b45309;  /* inscrição opcional / em análise */
+  --cor-neutra: #5a6572;    /* aberto / cancelada */
   --raio: 10px;
 }
 
@@ -24,49 +29,141 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding-bottom: 4.25rem; /* espaço da navegação inferior no celular */
 }
 
-/* Cabeçalho e navegação */
-.cabecalho {
-  background: var(--cor-primaria);
-  color: #fff;
-  padding: 0.9rem 1rem;
+/* ------------------------------------------------------------
+   Sidebar (≥768px) e navegação inferior (<768px)
+   ------------------------------------------------------------ */
+.lateral {
+  display: none;
 }
-.cabecalho h1 {
-  margin: 0 0 0.4rem;
-  font-size: 1.25rem;
-}
-.cabecalho nav ul {
+.navegacao-inferior {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
+  background: var(--cor-primaria);
 }
-.cabecalho nav a {
+.navegacao-inferior a {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.5rem 0.25rem 0.6rem;
   color: #dce8f4;
+  font-size: 0.72rem;
   text-decoration: none;
-  padding: 0.25rem 0.5rem;
-  border-radius: var(--raio);
+  text-align: center;
 }
-.cabecalho nav a:hover,
-.cabecalho nav a:focus-visible {
-  background: rgba(255, 255, 255, 0.15);
+.navegacao-inferior a strong {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.navegacao-inferior a[aria-current="page"] {
   color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+}
+.navegacao-inferior a:hover,
+.navegacao-inferior a:focus-visible {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.18);
 }
 
-/* Área principal */
+@media (min-width: 768px) {
+  body {
+    display: grid;
+    grid-template-columns: 15rem 1fr;
+    padding-bottom: 0;
+  }
+  .navegacao-inferior { display: none; }
+
+  .lateral {
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    padding: 1.25rem 0.9rem;
+    background: var(--cor-primaria);
+    color: #fff;
+  }
+  .lateral .marca {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #fff;
+    text-decoration: none;
+    margin: 0.25rem 0.4rem 1.25rem;
+  }
+  .lateral .marca small {
+    display: block;
+    font-weight: 400;
+    font-size: 0.72rem;
+    color: #9db4d4;
+  }
+  .lateral nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .lateral nav a {
+    color: #dce8f4;
+    text-decoration: none;
+    padding: 0.55rem 0.7rem;
+    border-radius: var(--raio);
+    font-size: 0.95rem;
+  }
+  .lateral nav a[aria-current="page"] {
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+  }
+  .lateral nav a:hover,
+  .lateral nav a:focus-visible {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+  }
+  .lateral .entrar {
+    margin-top: auto;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    background: var(--cor-acento);
+    color: #fff;
+    padding: 0.6rem 0.7rem;
+    border-radius: var(--raio);
+    font-weight: 600;
+  }
+  .lateral .entrar:hover,
+  .lateral .entrar:focus-visible {
+    filter: brightness(1.15);
+  }
+}
+
+/* ------------------------------------------------------------
+   Área principal
+   ------------------------------------------------------------ */
 main.container {
   width: 100%;
   max-width: 100%;
-  margin: 0 auto;
   padding: 1rem;
   flex: 1;
 }
 main.container h2 {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   margin: 1.25rem 0 0.5rem;
+}
+main.container h2:first-child {
+  margin-top: 0;
+}
+
+@media (min-width: 768px) {
+  main.container { max-width: 88rem; padding: 1.75rem 2rem; }
+}
+@media (min-width: 1440px) {
+  main.container { max-width: 100rem; }
 }
 
 .aviso {
@@ -78,7 +175,9 @@ main.container h2 {
   font-size: 0.85rem;
 }
 
-/* Listas de eventos */
+/* ------------------------------------------------------------
+   Cartões de evento + selos (badges)
+   ------------------------------------------------------------ */
 .lista-eventos {
   list-style: none;
   margin: 0;
@@ -96,23 +195,35 @@ main.container h2 {
   margin: 0 0 0.25rem;
   font-size: 1rem;
 }
-.cartao-evento small,
 .cartao-evento .meta {
   display: block;
-  color: #5a6572;
+  color: var(--cor-neutra);
   font-size: 0.85rem;
 }
-.cartao-evento .selo {
+.selo {
   display: inline-block;
-  background: #eaf3fb;
-  color: var(--cor-acento);
-  border-radius: var(--raio);
+  border-radius: 999px;
   font-size: 0.75rem;
-  padding: 0.1rem 0.5rem;
-  margin-top: 0.35rem;
+  padding: 0.15rem 0.6rem;
+  margin: 0.35rem 0.35rem 0 0;
+  border: 1px solid transparent;
+  font-weight: 600;
+}
+.selo--geral    { background: #eaf3fb; color: var(--cor-acento); }
+.selo--turma    { background: #f0eafb; color: #5b3fa8; }
+.selo--exige    { background: #e6f4ea; color: var(--cor-ok); }
+.selo--opcional { background: #fdf2e2; color: var(--cor-opcional); }
+.selo--aberto   { background: #eef1f4; color: var(--cor-neutra); }
+
+@media (min-width: 768px) {
+  .lista-eventos--dupla {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-/* Grade de turmas */
+/* ------------------------------------------------------------
+   Grade de turmas ("Turmas")
+   ------------------------------------------------------------ */
 .grade-turmas {
   list-style: none;
   margin: 0;
@@ -125,17 +236,133 @@ main.container h2 {
   background: #fff;
   border: 1px solid var(--cor-borda);
   border-radius: var(--raio);
-  padding: 0.75rem 1rem;
+  padding: 0.9rem 1rem;
   text-align: center;
   text-decoration: none;
   color: var(--cor-tinta);
+  font-weight: 600;
+}
+.cartao-turma small {
+  display: block;
+  font-weight: 400;
+  color: var(--cor-neutra);
+  margin-top: 0.2rem;
 }
 .cartao-turma:hover,
 .cartao-turma:focus-visible {
   border-color: var(--cor-acento);
 }
+@media (min-width: 768px) {
+  .grade-turmas { grid-template-columns: repeat(3, 1fr); }
+}
 
-/* Detalhe do evento */
+/* ------------------------------------------------------------
+   Grade mensal do calendário (F-16) — tabela acessível
+   ------------------------------------------------------------ */
+.grade-calendario {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  overflow: hidden;
+  font-size: 0.8rem;
+}
+.grade-calendario caption {
+  caption-side: top;
+  text-align: left;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0 0 0.5rem;
+}
+.grade-calendario th {
+  background: var(--cor-primaria-clara);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.4rem 0.25rem;
+  text-align: center;
+}
+.grade-calendario td {
+  border: 1px solid #e8ecf1;
+  vertical-align: top;
+  min-width: 2.2rem;
+  height: 4.2rem;
+  padding: 0.3rem;
+}
+.grade-calendario .dia-num {
+  font-weight: 600;
+  color: var(--cor-neutra);
+  font-size: 0.75rem;
+}
+.grade-calendario td.fora { background: #f6f8fa; }
+.grade-calendario td.hoje {
+  outline: 2px solid var(--cor-acento);
+  outline-offset: -2px;
+  background: #f0f7fd;
+}
+.grade-calendario .ev {
+  display: block;
+  margin-top: 0.25rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.grade-calendario .ev-exige    { background: #e6f4ea; color: var(--cor-ok); font-weight: 600; }
+.grade-calendario .ev-opcional { background: #fdf2e2; color: var(--cor-opcional); font-weight: 600; }
+.grade-calendario .ev-aberto   { background: #eef1f4; color: var(--cor-neutra); font-weight: 600; }
+
+.legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  font-size: 0.8rem;
+  margin: 0.6rem 0 0;
+}
+.legenda span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.legenda .ponto {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  display: inline-block;
+}
+.ponto--exige    { background: var(--cor-ok); }
+.ponto--opcional { background: var(--cor-opcional); }
+.ponto--aberto   { background: #9aa5b1; }
+
+/* Filtros do calendário (visual — sem filtro real sem dados do servidor) */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 0.75rem;
+}
+.chips button {
+  border: 1px solid var(--cor-borda);
+  background: #fff;
+  color: var(--cor-tinta);
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.chips button[aria-pressed="true"] {
+  background: var(--cor-primaria);
+  border-color: var(--cor-primaria);
+  color: #fff;
+}
+
+/* ------------------------------------------------------------
+   Detalhe do evento + modal de confirmação
+   ------------------------------------------------------------ */
 .detalhe-evento {
   background: #fff;
   border: 1px solid var(--cor-borda);
@@ -148,11 +375,15 @@ main.container h2 {
   grid-template-columns: max-content 1fr;
   gap: 0.4rem 1rem;
 }
-.detalhe-evento dt {
-  font-weight: 600;
-}
-.detalhe-evento dd {
-  margin: 0;
+.detalhe-evento dt { font-weight: 600; }
+.detalhe-evento dd { margin: 0; }
+
+.botoes-acao {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  align-items: center;
 }
 button.desabilitada {
   background: #c9d2dc;
@@ -163,6 +394,105 @@ button.desabilitada {
   font-size: 0.95rem;
   cursor: not-allowed;
 }
+button.primario:disabled,
+button.secundario:disabled {
+  background: #c9d2dc;
+  color: #6b7683;
+  border-color: transparent;
+  cursor: not-allowed;
+  font-weight: 500;
+}
+button.primario:not(:disabled):hover,
+button.primario:not(:disabled):focus-visible {
+  filter: brightness(1.12);
+}
+button.primario {
+  background: var(--cor-acento);
+  color: #fff;
+  border: 0;
+  border-radius: var(--raio);
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+button.secundario {
+  background: #fff;
+  color: var(--cor-tinta);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+dialog#modalInscricao {
+  border: 0;
+  border-radius: 12px;
+  padding: 0;
+  max-width: 24rem;
+  width: calc(100% - 2rem);
+  box-shadow: 0 12px 40px rgba(10, 31, 68, 0.35);
+}
+dialog#modalInscricao::backdrop {
+  background: rgba(10, 31, 68, 0.45);
+}
+.modal-interno {
+  padding: 1.25rem;
+}
+.modal-interno h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+}
+.modal-interno ul {
+  margin: 0.5rem 0;
+  padding-left: 1.1rem;
+  font-size: 0.9rem;
+  color: #45505c;
+}
+.modal-acoes {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+/* ------------------------------------------------------------
+   Minhas inscrições: abas + cartões de estado
+   ------------------------------------------------------------ */
+.abas {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0 0 1rem;
+  border-bottom: 2px solid var(--cor-borda);
+}
+.abas button {
+  border: 0;
+  background: transparent;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  color: var(--cor-neutra);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+}
+.abas button[aria-selected="true"] {
+  color: var(--cor-primaria);
+  font-weight: 600;
+  border-bottom-color: var(--cor-primaria);
+}
+.painel-aba[hidden] { display: none; }
+
+.estado {
+  display: inline-block;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.18rem 0.65rem;
+}
+.estado--confirmada { background: #e6f4ea; color: var(--cor-ok); }
+.estado--analise    { background: #fdf2e2; color: var(--cor-opcional); }
+.estado--cancelada  { background: #eef1f4; color: var(--cor-neutra); }
 
 .voltar {
   display: inline-block;
@@ -171,16 +501,17 @@ button.desabilitada {
   color: var(--cor-acento);
 }
 
-/* Rodapé */
+/* ------------------------------------------------------------
+   Rodapé e banner offline
+   ------------------------------------------------------------ */
 .rodape {
   padding: 1rem;
   text-align: center;
-  color: #5a6572;
+  color: var(--cor-neutra);
   font-size: 0.8rem;
   border-top: 1px solid var(--cor-borda);
 }
 
-/* Banner offline (RF17/D-008) — sticky no topo de qualquer página */
 #bannerOffline {
   position: sticky;
   top: 0;
@@ -193,19 +524,9 @@ button.desabilitada {
   text-align: center;
 }
 
-/* Tablet: 768px */
-@media (min-width: 768px) {
-  main.container {
-    max-width: 720px;
-  }
-  .grade-turmas {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* Desktop: 1440px */
-@media (min-width: 1440px) {
-  main.container {
-    max-width: 1000px;
-  }
+/* Foco visível para teclado (acessibilidade) */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--cor-acento);
+  outline-offset: 2px;
 }

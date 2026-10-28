@@ -11,12 +11,17 @@ Responda ✔/✘ em cada item. Falhas devem ser registradas no rodapé.
 - [ ] Em 1440 px: conteúdo centralizado com largura maior
 - [ ] Regardless de largura: nada sobrepõe/oculta texto
 
-## 2. Navegação
-- [ ] `/` → link "Turma exemplo" abre `/turma.html`
-- [ ] `/` → link "Ver detalhe" abre `/evento.html`
-- [ ] `/turma.html` → "← Voltar ao calendário" retorna a `/`
+## 2. Navegação (redesign: sidebar desktop / bottom nav no celular)
+- [ ] Desktop (≥768 px): sidebar fixa com Início / Turmas / Calendário / Minhas inscrições / Sobre + botão "Entrar"
+- [ ] Celular (<768 px): barra inferior fixa com os mesmos 5 destinos; sem sobrepor o conteúdo
+- [ ] `/` → grade mensal mostra o mês corrente com 3 eventos fictícios e dia de hoje destacado
+- [ ] `/turma.html` → calendário da turma, legenda e chips de filtro (visual, sem filtro real — sem dados do servidor)
+- [ ] `/` → link "Ver detalhe" abre `/evento.html` com badges (Geral / Exige inscrição)
+- [ ] `/evento.html` → "Ver modal de confirmação" abre o modal; "Inscrever-se" e "Cancelar inscrição" desabilitados (etapa 7)
+- [ ] `/inscricoes.html` → abas Ativas/Histórico alternam; estados Confirmada / Em análise / Cancelada visíveis
+- [ ] `/sobre.html` → conteúdo sem dados reais da escola (RNF10)
+- [ ] `/turma.html` e `/inscricoes.html` → links "← Voltar" retornam corretamente
 - [ ] `/login.html` → botão desabilitado e aviso de F-2 visível
-- [ ] `/evento.html` → botão "Inscrever-se" desabilitado com legenda da etapa 7
 
 ## 3. Conteúdo e privacidade (RNF10)
 - [ ] Todos os textos de dados mostram a marcação "fictício"

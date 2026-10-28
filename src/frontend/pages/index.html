@@ -8,57 +8,78 @@
   <link rel="manifest" href="/pwa/manifest.webmanifest">
 </head>
 <body>
-  <header class="cabecalho">
-    <h1>CEPK Eventos</h1>
-    <nav aria-label="Navegação principal">
-      <ul>
-        <li><a href="/" aria-current="page">Início</a></li>
-        <li><a href="/turma.html">Turma exemplo</a></li>
-        <li><a href="/login.html">Entrar</a></li>
-      </ul>
+  <!-- Navegação lateral (desktop) / inferior (celular) — protótipo aprovado -->
+  <aside class="lateral" aria-label="Navegação principal">
+    <a class="marca" href="/">CEPK Eventos<small>Colégio Estadual Presidente Kennedy</small></a>
+    <nav>
+      <a href="/" aria-current="page">Início</a>
+      <a href="/#turmas">Turmas</a>
+      <a href="/#calendario">Calendário</a>
+      <a href="/inscricoes.html">Minhas inscrições</a>
+      <a href="/sobre.html">Sobre</a>
     </nav>
-  </header>
+    <a class="entrar" href="/login.html">Entrar</a>
+  </aside>
 
   <main class="container">
     <h2>Calendário geral</h2>
     <p class="aviso">Dados fictícios de demonstração — reais virão do banco (etapa 5).
        Acesso sem login depende da decisão F-1.</p>
 
+    <!-- Grade mensal (F-16): preenchida por /js/calendario.js com o mês corrente -->
+    <section data-calendario="geral" aria-label="Calendário do mês corrente"></section>
+
+    <!-- Inscrever-se nos eventos: ver detalhe de cada um -->
+    <h3 id="turmas">Eventos do mês <small>(fictícios)</small></h3>
     <ul class="lista-eventos">
       <li class="cartao-evento">
-        <h3>Festival Cultural (fictício)</h3>
-        <span class="meta">20/11/2026, 08:00 — Pátio central (fictício)</span>
+        <h3>Torres de ciências (fictício)</h3>
+        <span class="meta">28/10/2026, 14:00 — Lab. de ciências (fictício)</span>
         <span class="meta">Inscrição requerida: 45/120 vagas fictícias</span>
-        <span class="selo">Geral</span>
+        <span class="selo selo--geral">Geral</span>
+        <span class="selo selo--exige">Exige inscrição</span>
         <a href="/evento.html">Ver detalhe</a>
       </li>
       <li class="cartao-evento">
         <h3>Roda de leitura (fictício)</h3>
-        <span class="meta">25/11/2026, 10:00 — Biblioteca (fictício)</span>
-        <span class="meta">Sem inscrição</span>
-        <span class="selo">Geral</span>
+        <span class="meta">29/10/2026, 10:00 — Biblioteca (fictício)</span>
+        <span class="meta">Aberto a todos</span>
+        <span class="selo selo--geral">Geral</span>
+        <span class="selo selo--aberto">Sem inscrição</span>
       </li>
       <li class="cartao-evento">
-        <h3>Torres de ciências (fictício)</h3>
-        <span class="meta">28/11/2026, 14:00 — Lab. de ciências (fictício)</span>
-        <span class="meta">Inscrição requerida: prazo 15/11/2026 (fictício)</span>
-        <span class="selo">Geral</span>
+        <h3>Festival Cultural (fictício)</h3>
+        <span class="meta">31/10/2026, 08:00 — Pátio central (fictício)</span>
+        <span class="meta">Inscrição requerida: prazo 20/11/2026 (fictício)</span>
+        <span class="selo selo--geral">Geral</span>
+        <span class="selo selo--exige">Exige inscrição</span>
         <a href="/evento.html">Ver detalhe</a>
       </li>
     </ul>
 
     <h2>Turmas</h2>
-    <ul class="grade-turmas">
-      <li><a class="cartao-turma" href="/turma.html">Turma exemplo A</a></li>
-      <li><a class="cartao-turma" href="/turma.html">Turma exemplo B</a></li>
-      <li><a class="cartao-turma" href="/turma.html">Turma exemplo C</a></li>
+    <p class="aviso">Os eventos exclusivos de cada turma só são visíveis para alunos
+       da própria turma (RF05/D-009) — aqui é maquete visual, sem vínculo real.</p>
+    <ul class="grade-turmas" aria-label="Lista de turmas">
+      <li><a class="cartao-turma" href="/turma.html">1º Ano A<small>Ver eventos da turma</small></a></li>
+      <li><a class="cartao-turma" href="/turma.html">1º Ano B<small>Ver eventos da turma</small></a></li>
+      <li><a class="cartao-turma" href="/turma.html">2º Ano A<small>Ver eventos da turma</small></a></li>
     </ul>
   </main>
 
+  <nav class="navegacao-inferior" aria-label="Navegação inferior (celular)">
+    <a href="/" aria-current="page"><strong>⌂</strong>Início</a>
+    <a href="/#calendario"><strong>▣</strong>Calendário</a>
+    <a href="/#turmas"><strong>☰</strong>Turmas</a>
+    <a href="/inscricoes.html"><strong>✓</strong>Inscrições</a>
+    <a href="/sobre.html"><strong>ℹ</strong>Sobre</a>
+  </nav>
+
   <footer class="rodape">
-    CEPK Eventos — estrutura inicial (etapa 3). Nenhuma tela busca dados do servidor ainda.
+    CEPK Eventos — protótipo visual (redesign 2026-10-28). Nenhuma tela busca dados do servidor ainda.
   </footer>
 
+  <script defer src="/js/calendario.js"></script>
   <script defer src="/js/offline.js"></script>
   <script>
     if ('serviceWorker' in navigator) {

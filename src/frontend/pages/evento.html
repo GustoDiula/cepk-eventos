@@ -8,38 +8,84 @@
   <link rel="manifest" href="/pwa/manifest.webmanifest">
 </head>
 <body>
-  <header class="cabecalho">
-    <h1>Detalhe do evento</h1>
-    <nav aria-label="Navegação principal">
-      <ul>
-        <li><a href="/">Início</a></li>
-        <li><a href="/login.html">Entrar</a></li>
-      </ul>
+  <aside class="lateral" aria-label="Navegação principal">
+    <a class="marca" href="/">CEPK Eventos<small>Colégio Estadual Presidente Kennedy</small></a>
+    <nav>
+      <a href="/">Início</a>
+      <a href="/#turmas">Turmas</a>
+      <a href="/#calendario">Calendário</a>
+      <a href="/inscricoes.html" aria-current="page">Minhas inscrições</a>
+      <a href="/sobre.html">Sobre</a>
     </nav>
-  </header>
+    <a class="entrar" href="/login.html">Entrar</a>
+  </aside>
 
   <main class="container">
     <article class="detalhe-evento">
       <h2>Festival Cultural (fictício)</h2>
+      <span class="selo selo--geral">Geral</span>
+      <span class="selo selo--exige">Exige inscrição</span>
       <dl>
-        <dt>Data e hora</dt><dd>20/11/2026, 08:00 (fictício)</dd>
+        <dt>Data e hora</dt><dd>31/10/2026, 08:00 (fictício)</dd>
         <dt>Local</dt><dd>Pátio central (fictício)</dd>
         <dt>Inscrições</dt><dd>45/120 vagas — fictício (RF15: indicador 🟡)</dd>
-        <dt>Prazo</dt><dd>10/11/2026, 18:00 (fictício)</dd>
+        <dt>Prazo</dt><dd>20/11/2026, 18:00 (fictício)</dd>
       </dl>
       <p>Descrição fictícia para validar o layout do detalhe do evento.
          O conteúdo real virá da API na etapa 5 (RF01/RF15).</p>
-      <p>
+
+      <div class="botoes-acao">
         <button class="desabilitada" disabled>Inscrever-se</button>
-        <small> Habilitado na etapa 7 (RF07/RF08) — exige confirmação do servidor.</small>
-      </p>
+        <button class="secundario" type="button" id="abrirModal">Ver modal de confirmação</button>
+        <button class="secundario" disabled>Cancelar inscrição</button>
+      </div>
+      <p><small>Inscrições e cancelamentos reais chegam nas etapas 7 (RF07/RF08/F-5) —
+         sempre depois da resposta do servidor (RN08).</small></p>
     </article>
+
+    <!-- Reprodução estática do modal "Confirmar inscrição" do protótipo -->
+    <dialog id="modalInscricao" aria-labelledby="tituloModal">
+      <form class="modal-interno" method="dialog">
+        <h3 id="tituloModal">Confirmar inscrição</h3>
+        <ul>
+          <li>Festival Cultural (fictício) — 31/10/2026, 08:00</li>
+          <li>Pátio central · 45/120 vagas fictícias</li>
+          <li>Confirmado como: João Silva, 1º Ano A (<em>demonstração</em>)</li>
+        </ul>
+        <p class="aviso">A inscrição só vale após a confirmação do servidor (RN08) —
+           esta janela é apenas visual.</p>
+        <div class="modal-acoes">
+          <button class="secundario" type="button" id="fecharModal">Cancelar</button>
+          <button class="primario" disabled>Confirmar</button>
+        </div>
+      </form>
+    </dialog>
 
     <a class="voltar" href="/">← Voltar ao calendário</a>
   </main>
 
-  <footer class="rodape">CEPK Eventos — maquete visual da etapa 3.</footer>
+  <nav class="navegacao-inferior" aria-label="Navegação inferior (celular)">
+    <a href="/"><strong>⌂</strong>Início</a>
+    <a href="/#calendario"><strong>▣</strong>Calendário</a>
+    <a href="/#turmas"><strong>☰</strong>Turmas</a>
+    <a href="/inscricoes.html" aria-current="page"><strong>✓</strong>Inscrições</a>
+    <a href="/sobre.html"><strong>ℹ</strong>Sobre</a>
+  </nav>
 
+  <footer class="rodape">CEPK Eventos — protótipo visual (redesign 2026-10-28).</footer>
+
+  <script>
+    // Demonstração do modal (visual). A inscrição real é da etapa 7.
+    document.addEventListener('DOMContentLoaded', function () {
+      var abrir = document.getElementById('abrirModal');
+      var fechar = document.getElementById('fecharModal');
+      var modal = document.getElementById('modalInscricao');
+      if (abrir && fechar && modal) {
+        abrir.addEventListener('click', function () { modal.showModal(); });
+        fechar.addEventListener('click', function () { modal.close(); });
+      }
+    });
+  </script>
   <script defer src="/js/offline.js"></script>
 </body>
 </html>

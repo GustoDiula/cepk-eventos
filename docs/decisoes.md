@@ -19,6 +19,11 @@ Serve para justificar escolhas durante o desenvolvimento do curso.
 | D-010 | 2026-10-28 | Sessão via cookie assinado `httpOnly` (em vez de JWT/localStorage) | Impede leitura do token por JavaScript; logout real para computadores compartilhados (AUD-06) | ✅ Decidida |
 | D-011 | 2026-10-28 | PostgreSQL do ambiente local por instalação direta (sem Docker) | Escolha do autor para o ambiente de desenvolvimento | ✅ Decidida |
 | D-012 | 2026-10-28 | Modo de teste de sessão liberado no dev enquanto F-2 pendência; bloqueado em produção (`NODE_ENV`) | Permitir progresso do plano (etapa 4) sem o provedor institucional | ✅ Decidida |
+| D-013 | 2026-10-28 | Calendário padrão em grade mensal com mês corrente dinamicamente renderizado (não congelado) | Decisão do autor baseada no protótipo visual (resolve F-16) | ✅ Decidida |
+| D-014 | 2026-10-28 | Novo conceito "inscrição opcional": evento aberto em que confirmar presença é opcional (badge próprio); tipos passam a ser exige / opcional / aberto | Decisão do autor, lida do protótipo (resolve F-18) | ✅ Decidida |
+| D-015 | 2026-10-28 | Estado de inscrição com 3 valores: Confirmada · Em análise · Cancelada (a análise é sempre do servidor: vagas/prazo) | Decisão do autor, lida do protótipo (resolve F-19) | ✅ Decidida |
+| D-016 | 2026-10-28 | Cancelamento de inscrição pela própria interface: botão "Cancelar inscrição" no site (sem fluxo via secretaria); endpoint/motor entra na etapa 7 | Decisão do autor (resolve F-5) | ✅ Decidida — implementação: etapa 7 |
+| D-017 | 2026-10-28 | Redesign visual conforme protótipo de 9 telas: sidebar desktop / bottom-nav mobile, cartões, badges, modal de confirmação; sem usuário fictício logado (cabeçalho mostra apenas "Entrar") | Aprovação explícita do autor; honestidade de interface (regra 9 do AGENTS.md) | ✅ Decidida |
 
 ## Pendências (avisos ao autor)
 
@@ -27,7 +32,7 @@ Serve para justificar escolhas durante o desenvolvimento do curso.
 | P-1 | Confirmar o provedor institucional de autenticação | Backend (login), requisitos F-2 |
 | P-2 | Definir hospedagem com HTTPS (backend) | Publicação final |
 | P-3 | Fornecer dados reais das turmas | Cadastro de turmas (F-6) |
-| P-4 | Decidir comportamento de cancelamento de evento e de inscrição | Regras de negócio (F-3, F-5). *F-4 resolvida por D-009 em 2026-10-28* |
+| P-4 | Decidir comportamento de cancelamento de evento | Regras de negócio (F-3). *F-5 resolvida por D-016 em 2026-10-28 — implementação na etapa 7* |
 
 > Novas decisões devem ser **adicionadas com novo ID**; nunca sobrescrever uma
 > decisão anterior (histórico preservado).

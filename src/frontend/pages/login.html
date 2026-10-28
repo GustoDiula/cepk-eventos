@@ -3,30 +3,44 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login — CEPK Eventos</title>
+  <title>Entrar — CEPK Eventos</title>
   <link rel="stylesheet" href="/css/main.css">
   <link rel="manifest" href="/pwa/manifest.webmanifest">
 </head>
 <body>
-  <header class="cabecalho">
-    <h1>CEPK Eventos</h1>
-    <nav aria-label="Navegação principal">
-      <ul>
-        <li><a href="/">Início</a></li>
-      </ul>
+  <aside class="lateral" aria-label="Navegação principal">
+    <a class="marca" href="/">CEPK Eventos<small>Colégio Estadual Presidente Kennedy</small></a>
+    <nav>
+      <a href="/">Início</a>
+      <a href="/#turmas">Turmas</a>
+      <a href="/#calendario">Calendário</a>
+      <a href="/inscricoes.html">Minhas inscrições</a>
+      <a href="/sobre.html">Sobre</a>
     </nav>
-  </header>
+    <a class="entrar" href="/login.html" aria-current="page">Entrar</a>
+  </aside>
 
   <main class="container">
-    <h2>Entrar</h2>
-    <button class="desabilitada" disabled>Entrar com conta @escola</button>
-    <p class="aviso">Autenticação institucional pendente da decisão F-2 (provedor da
-       escola). Nada é enviado a nenhum serviço nesta etapa (regra 3/5 do AGENTS.md).</p>
-    <p>Após o login confirmado, o aluno será direcionado à própria turma (RF03).</p>
+    <article class="detalhe-evento">
+      <h2>Entrar</h2>
+      <p>Use sua conta institucional da escola.</p>
+      <button class="desabilitada" disabled>Entrar com conta @escola</button>
+      <p class="aviso">Autenticação institucional pendente da decisão F-2 (provedor da
+         escola). Nada é enviado a nenhum serviço nesta etapa (regras 3/5 do AGENTS.md).</p>
+      <p>Após o login confirmado, o aluno é direcionado à própria turma (RF03, D-009).</p>
+    </article>
     <a class="voltar" href="/">← Voltar ao calendário</a>
   </main>
 
-  <footer class="rodape">CEPK Eventos — maquete visual da etapa 3.</footer>
+  <nav class="navegacao-inferior" aria-label="Navegação inferior (celular)">
+    <a href="/"><strong>⌂</strong>Início</a>
+    <a href="/#calendario"><strong>▣</strong>Calendário</a>
+    <a href="/#turmas"><strong>☰</strong>Turmas</a>
+    <a href="/inscricoes.html"><strong>✓</strong>Inscrições</a>
+    <a href="/sobre.html"><strong>ℹ</strong>Sobre</a>
+  </nav>
+
+  <footer class="rodape">CEPK Eventos — protótipo visual (redesign 2026-10-28).</footer>
 
   <script defer src="/js/offline.js"></script>
 </body>

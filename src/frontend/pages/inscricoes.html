@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Minhas inscrições — CEPK Eventos</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="manifest" href="/pwa/manifest.webmanifest">
+</head>
+<body>
+  <aside class="lateral" aria-label="Navegação principal">
+    <a class="marca" href="/">CEPK Eventos<small>Colégio Estadual Presidente Kennedy</small></a>
+    <nav>
+      <a href="/">Início</a>
+      <a href="/#turmas">Turmas</a>
+      <a href="/#calendario">Calendário</a>
+      <a href="/inscricoes.html" aria-current="page">Minhas inscrições</a>
+      <a href="/sobre.html">Sobre</a>
+    </nav>
+    <a class="entrar" href="/login.html">Entrar</a>
+  </aside>
+
+  <main class="container">
+    <h2>Minhas inscrições</h2>
+    <p class="aviso">Inscrições fictícias de demonstração — a lista real chega da
+       API na etapa 7 (RF07/RF08) e exige login (F-2).</p>
+
+    <!-- Abas (protótipo): alternância simples, conteúdo estático: dados fictícios -->
+    <div class="abas" role="tablist" aria-label="Filtro de inscrições">
+      <button type="button" role="tab" aria-selected="true" aria-controls="painelAtivas">Ativas</button>
+      <button type="button" role="tab" aria-selected="false" aria-controls="painelHistorico">Histórico</button>
+    </div>
+
+    <div id="painelAtivas" class="painel-aba" role="tabpanel">
+      <ul class="lista-eventos">
+        <li class="cartao-evento">
+          <h3>Festival Cultural (fictício)</h3>
+          <span class="meta">31/10/2026, 08:00 — Pátio central (fictício)</span>
+          <span class="estado estado--confirmada">Confirmada</span>
+          <span class="botoes-acao">
+            <button class="secundario" type="button" disabled>Cancelar inscrição</button>
+          </span>
+          <small>O cancelamento real pela própria interface é da etapa 7 (decisão F-5).</small>
+        </li>
+        <li class="cartao-evento">
+          <h3>Torres de ciências (fictício)</h3>
+          <span class="meta">28/10/2026, 14:00 — Lab. de ciências (fictício)</span>
+          <span class="estado estado--analise">Em análise</span>
+          <p><small>O servidor confirma a análise (vagas/prazo checados, D-015).</small></p>
+        </li>
+      </ul>
+    </div>
+
+    <div id="painelHistorico" class="painel-aba" role="tabpanel" hidden>
+      <ul class="lista-eventos">
+        <li class="cartao-evento">
+          <h3>Olimpíada de matemática (fictício)</h3>
+          <span class="meta">12/09/2026 (fictício — evento realizado)</span>
+          <span class="estado estado--confirmada">Confirmada</span>
+        </li>
+        <li class="cartao-evento">
+          <h3>Mostra de ciências (fictício)</h3>
+          <span class="meta">05/08/2026 (fictício — cancelada antes do evento)</span>
+          <span class="estado estado--cancelada">Cancelada</span>
+        </li>
+      </ul>
+    </div>
+
+    <a class="voltar" href="/">← Voltar ao calendário</a>
+  </main>
+
+  <nav class="navegacao-inferior" aria-label="Navegação inferior (celular)">
+    <a href="/"><strong>⌂</strong>Início</a>
+    <a href="/#calendario"><strong>▣</strong>Calendário</a>
+    <a href="/#turmas"><strong>☰</strong>Turmas</a>
+    <a href="/inscricoes.html" aria-current="page"><strong>✓</strong>Inscrições</a>
+    <a href="/sobre.html"><strong>ℹ</strong>Sobre</a>
+  </nav>
+
+  <footer class="rodape">CEPK Eventos — protótipo visual (redesign 2026-10-28).</footer>
+
+  <script>
+    // Alternância das abas (visual). Dados reais: etapa 7.
+    document.addEventListener('DOMContentLoaded', function () {
+      var pares = [
+        { botao: document.querySelectorAll('.abas [role="tab"]')[0], painel: document.getElementById('painelAtivas') },
+        { botao: document.querySelectorAll('.abas [role="tab"]')[1], painel: document.getElementById('painelHistorico') },
+      ];
+      pares.forEach(function (par) {
+        if (!par.botao || !par.painel) return;
+        par.botao.addEventListener('click', function () {
+          pares.forEach(function (outro) {
+            outro.botao.setAttribute('aria-selected', outro === par ? 'true' : 'false');
+            outro.painel.hidden = outro !== par;
+          });
+        });
+      });
+    });
+  </script>
+  <script defer src="/js/offline.js"></script>
+</body>
+</html>
