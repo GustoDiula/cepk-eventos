@@ -13,11 +13,11 @@
     <nav>
       <a href="/">Início</a>
       <a href="/#turmas">Turmas</a>
-      <a href="/#calendario">Calendário</a>
+      <a href="/calendario.html">Calendário</a>
       <a href="/inscricoes.html">Minhas inscrições</a>
       <a href="/sobre.html" aria-current="page">Sobre</a>
     </nav>
-    <a class="entrar" href="/login.html">Entrar</a>
+    <div class="area-sessao" id="areaSessao"></div>
   </aside>
 
   <main class="container">
@@ -48,14 +48,17 @@
 
   <nav class="navegacao-inferior" aria-label="Navegação inferior (celular)">
     <a href="/"><strong>⌂</strong>Início</a>
-    <a href="/#calendario"><strong>▣</strong>Calendário</a>
+    <a href="/calendario.html"><strong>▣</strong>Calendário</a>
     <a href="/#turmas"><strong>☰</strong>Turmas</a>
     <a href="/inscricoes.html"><strong>✓</strong>Inscrições</a>
     <a href="/sobre.html" aria-current="page"><strong>ℹ</strong>Sobre</a>
   </nav>
 
+  <div class="faixa-sessao" id="faixaSessao"><span>Sessão de demonstração</span></div>
+
   <footer class="rodape">CEPK Eventos — protótipo visual (redesign 2026-10-28).</footer>
 
+  <script defer src="/js/sessao.js"></script>
   <script defer src="/js/offline.js"></script>
 </body>
 </html>

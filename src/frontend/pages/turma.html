@@ -13,59 +13,70 @@
     <nav>
       <a href="/">Início</a>
       <a href="/#turmas" aria-current="page">Turmas</a>
-      <a href="/#calendario">Calendário</a>
+      <a href="/calendario.html">Calendário</a>
       <a href="/inscricoes.html">Minhas inscrições</a>
       <a href="/sobre.html">Sobre</a>
     </nav>
-    <a class="entrar" href="/login.html">Entrar</a>
+    <div class="area-sessao" id="areaSessao"></div>
   </aside>
 
   <main class="container">
     <h2>Turma 1º Ano A <small>(fictícia)</small></h2>
-    <p class="aviso">Dados fictícios — nesta etapa não existe verificação de vínculo;
-       o isolamento por perfil (RF05) entra na etapa 5, validado no servidor.</p>
+    <p class="aviso">Datas FICTÍCIAS de demonstração — o calendário real virá do banco
+       (etapa 5) com verificação de vínculo no servidor (RF05).</p>
 
-    <!-- Filtros (visual): sem dados reais ainda (etapa 5), não filtram de verdade -->
-    <div class="chips" role="group" aria-label="Filtros de eventos (visual)">
-      <button type="button" aria-pressed="true">Todos</button>
-      <button type="button" aria-pressed="false">Exige inscrição</button>
-      <button type="button" aria-pressed="false">Sem inscrição</button>
-    </div>
+    <section data-calendario="provas" aria-label="Calendário da turma (mês corrente)"></section>
 
-    <section data-calendario="turma" aria-label="Calendário da turma (mês corrente)"></section>
-
-    <h3>Eventos da turma <small>(fictícios)</small></h3>
+    <h3>Provas e atividades da turma <small>(fictícias)</small></h3>
     <ul class="lista-eventos">
       <li class="cartao-evento">
-        <h3>Reforço de matemática (fictício)</h3>
-        <span class="meta">27/10/2026, 13:30 — Sala 12 (fictício)</span>
-        <span class="meta">Aberto aos alunos da turma</span>
-        <span class="selo selo--turma">Turma</span>
-        <span class="selo selo--aberto">Sem inscrição</span>
+        <h3>Prova de Matemática (fictícia)</h3>
+        <span class="meta">28/10/2026, 08:00 — Sala 12 (fictício)</span>
+        <span class="selo selo--prova">Prova</span>
       </li>
       <li class="cartao-evento">
-        <h3>Reunião de pais (fictício)</h3>
-        <span class="meta">30/10/2026, 19:00 — Auditório (fictício)</span>
-        <span class="meta">Inscrição requerida: 18/40 vagas fictícias</span>
-        <span class="selo selo--turma">Turma</span>
+        <h3>Prova de História (fictícia)</h3>
+        <span class="meta">04/11/2026, 08:00 — Sala 12 (fictício)</span>
+        <span class="selo selo--prova">Prova</span>
+      </li>
+      <li class="cartao-evento">
+        <h3>Prova de Biologia (fictícia)</h3>
+        <span class="meta">11/11/2026, 08:00 — Sala 12 (fictício)</span>
+        <span class="selo selo--prova">Prova</span>
+      </li>
+      <li class="cartao-evento">
+        <h3>Prova de Português (fictícia)</h3>
+        <span class="meta">18/11/2026, 08:00 — Sala 12 (fictício)</span>
+        <span class="selo selo--prova">Prova</span>
+      </li>
+      <li class="cartao-evento">
+        <h3>Prova de Geografia (fictícia)</h3>
+        <span class="meta">25/11/2026, 08:00 — Sala 12 (fictício)</span>
+        <span class="selo selo--prova">Prova</span>
+      </li>
+      <li class="cartao-evento">
+        <h3>Feira de profissões (fictícia)</h3>
+        <span class="meta">05/12/2026, 09:00 — Ginásio (fictício)</span>
+        <span class="selo selo--atividade">Feira</span>
+      </li>
+      <li class="cartao-evento">
+        <h3>Viagem pedagógica (fictícia)</h3>
+        <span class="meta">08/12/2026, 07:30 — saída da escola (fictício)</span>
+        <span class="meta">Exige inscrição: 30/45 vagas — prazo 30/11/2026 (fictício)</span>
+        <span class="selo selo--atividade">Viagem pedagógica</span>
         <span class="selo selo--exige">Exige inscrição</span>
         <a href="/evento.html">Ver detalhe</a>
       </li>
       <li class="cartao-evento">
-        <h3>Feira de profissões (fictício)</h3>
-        <span class="meta">31/10/2026, 09:00 — Ginásio (fictício)</span>
-        <span class="meta">Presença opcional: inscreva-se se quiser confirmar</span>
-        <span class="selo selo--turma">Turma</span>
-        <span class="selo selo--opcional">Inscrição opcional</span>
-        <a href="/evento.html">Ver detalhe</a>
+        <h3>Entrega de boletim (fictícia)</h3>
+        <span class="meta">11/12/2026, 19:00 — Sala 12 (fictício)</span>
+        <span class="selo selo--atividade">Boletim</span>
       </li>
     </ul>
 
-    <!-- Legenda do calendário -->
     <div class="legenda" aria-label="Legenda">
-      <span><i class="ponto ponto--exige"></i>Exige inscrição</span>
-      <span><i class="ponto ponto--opcional"></i>Inscrição opcional</span>
-      <span><i class="ponto ponto--aberto"></i>Sem inscrição</span>
+      <span><i class="ponto ponto--prova"></i>Prova</span>
+      <span><i class="ponto ponto--atividade"></i>Feira / viagem / boletim</span>
     </div>
 
     <a class="voltar" href="/#turmas">← Voltar às turmas</a>
@@ -73,15 +84,18 @@
 
   <nav class="navegacao-inferior" aria-label="Navegação inferior (celular)">
     <a href="/"><strong>⌂</strong>Início</a>
-    <a href="/#calendario"><strong>▣</strong>Calendário</a>
+    <a href="/calendario.html"><strong>▣</strong>Calendário</a>
     <a href="/#turmas" aria-current="page"><strong>☰</strong>Turmas</a>
     <a href="/inscricoes.html"><strong>✓</strong>Inscrições</a>
     <a href="/sobre.html"><strong>ℹ</strong>Sobre</a>
   </nav>
 
+  <div class="faixa-sessao" id="faixaSessao"><span>Sessão de demonstração</span></div>
+
   <footer class="rodape">CEPK Eventos — protótipo visual (redesign 2026-10-28).</footer>
 
   <script defer src="/js/calendario.js"></script>
+  <script defer src="/js/sessao.js"></script>
   <script defer src="/js/offline.js"></script>
 </body>
 </html>

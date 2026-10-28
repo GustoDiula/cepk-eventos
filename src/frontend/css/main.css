@@ -530,3 +530,110 @@ button:focus-visible {
   outline: 2px solid var(--cor-acento);
   outline-offset: 2px;
 }
+
+/* ------------------------------------------------------------
+   Sessão de demonstração (D-018) — sidebar e faixa no celular
+   ------------------------------------------------------------ */
+.area-sessao {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: auto;
+}
+.nome-demo {
+  font-size: 0.85rem;
+  color: #fff;
+  padding: 0 0.2rem;
+  word-break: break-all;
+}
+.sair-demo {
+  background: transparent;
+  color: #dce8f4;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: var(--raio);
+  padding: 0.4rem 0.7rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.sair-demo:hover,
+.sair-demo:focus-visible {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+.lateral .entrar {
+  display: block;
+}
+/* Esconde o link estático "Entrar" da sidebar quando a sessão demo é renderizada */
+.area-sessao:has(.sair-demo) ~ * { }
+
+/* Faixa de sessão demo no celular (navegação inferior esconde a sidebar) */
+.faixa-sessao {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 4.25rem;
+  z-index: 19;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  background: var(--cor-primaria-clara);
+  color: #fff;
+  font-size: 0.8rem;
+}
+.faixa-sessao .sair-demo {
+  padding: 0.25rem 0.6rem;
+}
+html.com-sessao-demo .faixa-sessao {
+  display: flex;
+}
+@media (min-width: 768px) {
+  html.com-sessao-demo .faixa-sessao { display: none; }
+}
+
+/* ------------------------------------------------------------
+   Feriados do Paraná (D-019) — selos e marcas na grade
+   ------------------------------------------------------------ */
+.selo--feriado       { background: #fdecec; color: #a12828; }
+.selo--feriadoest    { background: #fff7e6; color: #8a5b00; }
+.selo--facultativo   { background: #eef1f4; color: var(--cor-neutra); }
+.selo--prova         { background: #e8f0fc; color: #1a4f9c; }
+.selo--atividade     { background: #eafbf2; color: #17764b; }
+
+.grade-calendario .ev-feriado     { background: #fdecec; color: #a12828; font-weight: 600; }
+.grade-calendario .ev-feriadoest  { background: #fff7e6; color: #8a5b00; font-weight: 600; }
+.grade-calendario .ev-facultativo { background: #eef1f4; color: var(--cor-neutra); }
+.grade-calendario .ev-prova       { background: #e8f0fc; color: #1a4f9c; font-weight: 600; }
+.grade-calendario .ev-atividade   { background: #eafbf2; color: #17764b; font-weight: 600; }
+
+.legenda .ponto--feriado     { background: #d05454; }
+.legenda .ponto--feriadoest  { background: #e6a23c; }
+.legenda .ponto--facultativo { background: #9aa5b1; }
+.legenda .ponto--prova       { background: #3b6fc4; }
+.legenda .ponto--atividade   { background: #2fbf79; }
+
+/* ------------------------------------------------------------
+   Formulário de login de demonstração (D-018)
+   ------------------------------------------------------------ */
+.form-login {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 24rem;
+}
+.form-login label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.form-login input {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+.form-login input:focus-visible {
+  outline: 2px solid var(--cor-acento);
+  outline-offset: 1px;
+}

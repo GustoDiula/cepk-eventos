@@ -14,72 +14,133 @@
     <nav>
       <a href="/" aria-current="page">Início</a>
       <a href="/#turmas">Turmas</a>
-      <a href="/#calendario">Calendário</a>
+      <a href="/calendario.html">Calendário</a>
       <a href="/inscricoes.html">Minhas inscrições</a>
       <a href="/sobre.html">Sobre</a>
     </nav>
-    <a class="entrar" href="/login.html">Entrar</a>
+    <div class="area-sessao" id="areaSessao"></div>
   </aside>
 
   <main class="container">
-    <h2>Calendário geral</h2>
-    <p class="aviso">Dados fictícios de demonstração — reais virão do banco (etapa 5).
-       Acesso sem login depende da decisão F-1.</p>
+    <h2>Feriados do Paraná — 2026</h2>
 
-    <!-- Grade mensal (F-16): preenchida por /js/calendario.js com o mês corrente -->
-    <section data-calendario="geral" aria-label="Calendário do mês corrente"></section>
+    <!-- Grade mensal (F-16/D-019): preenchida por /js/calendario.js com o mês corrente -->
+    <section data-calendario="feriados" aria-label="Calendário do mês corrente"></section>
 
-    <!-- Inscrever-se nos eventos: ver detalhe de cada um -->
-    <h3 id="turmas">Eventos do mês <small>(fictícios)</small></h3>
-    <ul class="lista-eventos">
+    <div class="legenda" aria-label="Legenda">
+      <span><i class="ponto ponto--feriado"></i>Feriado nacional</span>
+      <span><i class="ponto ponto--feriadoest"></i>Feriado estadual (PR)</span>
+      <span><i class="ponto ponto--facultativo"></i>Ponto facultativo/recesso</span>
+    </div>
+
+    <h3>Ano de 2026 completo <small>(calendário oficial do Governo do Paraná)</small></h3>
+    <p class="aviso">Fonte oficial: <a href="https://www.administracao.pr.gov.br/Pagina/Calendario-Anual" rel="noopener">Calendário Anual 2026 — SEAP/Governo do PR</a> e
+       <a href="https://www.turismo.pr.gov.br/Pagina/Feriados-Civis-e-Datas-Comemorativas" rel="noopener">Feriados Civis — Turismo PR</a>.
+       O recesso estadual de 21–31/12 aparece representado pelos dias extremos.</p>
+
+    <ul class="lista-eventos lista-eventos--dupla">
       <li class="cartao-evento">
-        <h3>Torres de ciências (fictício)</h3>
-        <span class="meta">28/10/2026, 14:00 — Lab. de ciências (fictício)</span>
-        <span class="meta">Inscrição requerida: 45/120 vagas fictícias</span>
-        <span class="selo selo--geral">Geral</span>
-        <span class="selo selo--exige">Exige inscrição</span>
-        <a href="/evento.html">Ver detalhe</a>
+        <h3>Confraternização Universal</h3>
+        <span class="meta">01/01/2026 — feriado nacional</span>
+        <span class="selo selo--feriado">Feriado nacional</span>
       </li>
       <li class="cartao-evento">
-        <h3>Roda de leitura (fictício)</h3>
-        <span class="meta">29/10/2026, 10:00 — Biblioteca (fictício)</span>
-        <span class="meta">Aberto a todos</span>
-        <span class="selo selo--geral">Geral</span>
-        <span class="selo selo--aberto">Sem inscrição</span>
+        <h3>Carnaval</h3>
+        <span class="meta">16 e 17/02/2026 — ponto facultativo · 18/02 Quarta-feira de Cinzas (pf até 14h)</span>
+        <span class="selo selo--facultativo">Ponto facultativo</span>
       </li>
       <li class="cartao-evento">
-        <h3>Festival Cultural (fictício)</h3>
-        <span class="meta">31/10/2026, 08:00 — Pátio central (fictício)</span>
-        <span class="meta">Inscrição requerida: prazo 20/11/2026 (fictício)</span>
-        <span class="selo selo--geral">Geral</span>
-        <span class="selo selo--exige">Exige inscrição</span>
-        <a href="/evento.html">Ver detalhe</a>
+        <h3>Paixão de Cristo</h3>
+        <span class="meta">03/04/2026 — feriado nacional</span>
+        <span class="meta">02/04 e 20/04/2026 — pontos facultativos</span>
+        <span class="selo selo--feriado">Feriado nacional</span>
+      </li>
+      <li class="cartao-evento">
+        <h3>Tiradentes</h3>
+        <span class="meta">21/04/2026 — feriado nacional</span>
+        <span class="selo selo--feriado">Feriado nacional</span>
+      </li>
+      <li class="cartao-evento">
+        <h3>Dia do Trabalho</h3>
+        <span class="meta">01/05/2026 — feriado nacional</span>
+        <span class="selo selo--feriado">Feriado nacional</span>
+      </li>
+      <li class="cartao-evento">
+        <h3>Corpus Christi</h3>
+        <span class="meta">04/06/2026 — ponto facultativo · 05/06/2026 ponto facultativo</span>
+        <span class="selo selo--facultativo">Ponto facultativo</span>
+      </li>
+      <li class="cartao-evento">
+        <h3>Independência do Brasil</h3>
+        <span class="meta">07/09/2026 — feriado nacional</span>
+        <span class="selo selo--feriado">Feriado nacional</span>
+      </li>
+      <li class="cartao-evento">
+        <h3>Nossa Senhora Aparecida</h3>
+        <span class="meta">12/10/2026 — feriado nacional</span>
+        <span class="selo selo--feriado">Feriado nacional</span>
+      </li>
+      <li class="cartao-evento">
+        <h3>Finados</h3>
+        <span class="meta">02/11/2026 — feriado nacional</span>
+        <span class="selo selo--feriado">Feriado nacional</span>
+      </li>
+      <li class="cartao-evento">
+        <h3>Proclamação da República</h3>
+        <span class="meta">15/11/2026 — feriado nacional</span>
+        <span class="selo selo--feriado">Feriado nacional</span>
+      </li>
+      <li class="cartao-evento">
+        <h3>Dia Nacional de Zumbi e da Consciência Negra</h3>
+        <span class="meta">20/11/2026 — feriado nacional</span>
+        <span class="selo selo--feriado">Feriado nacional</span>
+      </li>
+      <li class="cartao-evento">
+        <h3>Emancipação Política do Paraná</h3>
+        <span class="meta">19/12/2026 — feriado estadual</span>
+        <span class="selo selo--feriadoest">Feriado estadual</span>
+      </li>
+      <li class="cartao-evento">
+        <h3>Recesso do Governo do Paraná</h3>
+        <span class="meta">21 a 31/12/2026 — recesso</span>
+        <span class="selo selo--facultativo">Recesso</span>
+      </li>
+      <li class="cartao-evento">
+        <h3>Natal</h3>
+        <span class="meta">25/12/2026 — feriado nacional</span>
+        <span class="selo selo--feriado">Feriado nacional</span>
       </li>
     </ul>
 
     <h2>Turmas</h2>
-    <p class="aviso">Os eventos exclusivos de cada turma só são visíveis para alunos
-       da própria turma (RF05/D-009) — aqui é maquete visual, sem vínculo real.</p>
+    <p class="aviso">As atividades de cada turma (provas, feiras, viagens pedagógicas,
+       boletim) só são visíveis para alunos da própria turma (RF05/D-009) —
+       aqui é maquete visual, sem vínculo real.</p>
     <ul class="grade-turmas" aria-label="Lista de turmas">
-      <li><a class="cartao-turma" href="/turma.html">1º Ano A<small>Ver eventos da turma</small></a></li>
-      <li><a class="cartao-turma" href="/turma.html">1º Ano B<small>Ver eventos da turma</small></a></li>
-      <li><a class="cartao-turma" href="/turma.html">2º Ano A<small>Ver eventos da turma</small></a></li>
+      <li><a class="cartao-turma" href="/turma.html">1º Ano A<small>Calendário de provas e atividades</small></a></li>
+      <li><a class="cartao-turma" href="/calendario.html">1º Ano B<small>Calendário de provas e atividades</small></a></li>
+      <li><a class="cartao-turma" href="/calendario.html">2º Ano A<small>Calendário de provas e atividades</small></a></li>
     </ul>
   </main>
 
   <nav class="navegacao-inferior" aria-label="Navegação inferior (celular)">
     <a href="/" aria-current="page"><strong>⌂</strong>Início</a>
-    <a href="/#calendario"><strong>▣</strong>Calendário</a>
+    <a href="/calendario.html"><strong>▣</strong>Calendário</a>
     <a href="/#turmas"><strong>☰</strong>Turmas</a>
     <a href="/inscricoes.html"><strong>✓</strong>Inscrições</a>
     <a href="/sobre.html"><strong>ℹ</strong>Sobre</a>
   </nav>
 
+  <!-- Faixa da sessão demo (celular), preenchida por sessao.js -->
+  <div class="faixa-sessao" id="faixaSessao"><span>Sessão de demonstração</span></div>
+
   <footer class="rodape">
-    CEPK Eventos — protótipo visual (redesign 2026-10-28). Nenhuma tela busca dados do servidor ainda.
+    CEPK Eventos — protótipo visual. Feriados oficialmente publicados pelo Governo do Paraná;
+    nenhuma tela busca dados do servidor ainda.
   </footer>
 
   <script defer src="/js/calendario.js"></script>
+  <script defer src="/js/sessao.js"></script>
   <script defer src="/js/offline.js"></script>
   <script>
     if ('serviceWorker' in navigator) {

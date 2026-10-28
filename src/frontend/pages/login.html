@@ -13,35 +13,67 @@
     <nav>
       <a href="/">Início</a>
       <a href="/#turmas">Turmas</a>
-      <a href="/#calendario">Calendário</a>
+      <a href="/calendario.html">Calendário</a>
       <a href="/inscricoes.html">Minhas inscrições</a>
       <a href="/sobre.html">Sobre</a>
     </nav>
-    <a class="entrar" href="/login.html" aria-current="page">Entrar</a>
+    <div class="area-sessao" id="areaSessao"></div>
   </aside>
 
   <main class="container">
     <article class="detalhe-evento">
       <h2>Entrar</h2>
-      <p>Use sua conta institucional da escola.</p>
-      <button class="desabilitada" disabled>Entrar com conta @escola</button>
-      <p class="aviso">Autenticação institucional pendente da decisão F-2 (provedor da
-         escola). Nada é enviado a nenhum serviço nesta etapa (regras 3/5 do AGENTS.md).</p>
-      <p>Após o login confirmado, o aluno é direcionado à própria turma (RF03, D-009).</p>
+
+      <!-- Login de DEMONSTRAÇÃO (D-018/D-012): a senha digitada é DESCARTADA.
+           Não é autenticação real: não valida, não envia, não guarda. -->
+      <form class="form-login" id="formDemo">
+        <label for="campoEmail">E-mail (qualquer e-mail serve na demonstração)</label>
+        <input id="campoEmail" name="email" type="email" autocomplete="off"
+               placeholder="ex.: nome.sobrenome@escola.pr.gov.br" required>
+        <label for="campoSenha">Senha (NUNCA é guardada ou enviada — abandonada aqui)</label>
+        <input id="campoSenha" name="senha" type="password" autocomplete="off"
+               placeholder="não é usada nesta demonstração" required>
+        <button class="primario" type="submit">Entrar (demonstração)</button>
+      </form>
+
+      <p class="aviso"><strong>Por que não é real?</strong> A autenticação institucional
+         (contas @escola) depende do provedor da escola (pendência F-2) e do backend
+         de sessão (etapa 4). Enquanto isso, qualquer nome digitado entra como
+         <em>demonstração</em> e aparece marcado "(demo)" no site.</p>
+      <p>Após o login REAL (futuro), o aluno é direcionado à própria turma (RF03/D-009)
+         e a sessão vira cookie assinado httpOnly no servidor (D-010).</p>
     </article>
-    <a class="voltar" href="/">← Voltar ao calendário</a>
+    <a class="voltar" href="/">← Voltar ao início</a>
   </main>
 
   <nav class="navegacao-inferior" aria-label="Navegação inferior (celular)">
     <a href="/"><strong>⌂</strong>Início</a>
-    <a href="/#calendario"><strong>▣</strong>Calendário</a>
+    <a href="/calendario.html"><strong>▣</strong>Calendário</a>
     <a href="/#turmas"><strong>☰</strong>Turmas</a>
     <a href="/inscricoes.html"><strong>✓</strong>Inscrições</a>
     <a href="/sobre.html"><strong>ℹ</strong>Sobre</a>
   </nav>
 
+  <div class="faixa-sessao" id="faixaSessao"><span>Sessão de demonstração</span></div>
+
   <footer class="rodape">CEPK Eventos — protótipo visual (redesign 2026-10-28).</footer>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      document.getElementById('formDemo').addEventListener('submit', function (evento) {
+        evento.preventDefault(); // NADA é enviado
+        var email = document.getElementById('campoEmail').value.trim();
+        // A senha lida aqui morre nesta função (não é salva em lugar nenhum).
+        var parteNome = email.split('@')[0] || 'Aluno Demo';
+        var nome = parteNome
+          .replace(/[._-]+/g, ' ')
+          .replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+        window.CEPKSessaoDemo.entrar(nome, email);
+        location.href = '/';
+      });
+    });
+  </script>
+  <script defer src="/js/sessao.js"></script>
   <script defer src="/js/offline.js"></script>
 </body>
 </html>

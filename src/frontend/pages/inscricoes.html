@@ -13,17 +13,18 @@
     <nav>
       <a href="/">Início</a>
       <a href="/#turmas">Turmas</a>
-      <a href="/#calendario">Calendário</a>
+      <a href="/calendario.html">Calendário</a>
       <a href="/inscricoes.html" aria-current="page">Minhas inscrições</a>
       <a href="/sobre.html">Sobre</a>
     </nav>
-    <a class="entrar" href="/login.html">Entrar</a>
+    <div class="area-sessao" id="areaSessao"></div>
   </aside>
 
   <main class="container">
     <h2>Minhas inscrições</h2>
     <p class="aviso">Inscrições fictícias de demonstração — a lista real chega da
-       API na etapa 7 (RF07/RF08) e exige login (F-2).</p>
+       API na etapa 7 (RF07/RF08) e exige login REAL (F-2); inscrição só vale
+       com confirmação do servidor (RN08).</p>
 
     <!-- Abas (protótipo): alternância simples, conteúdo estático: dados fictícios -->
     <div class="abas" role="tablist" aria-label="Filtro de inscrições">
@@ -34,8 +35,8 @@
     <div id="painelAtivas" class="painel-aba" role="tabpanel">
       <ul class="lista-eventos">
         <li class="cartao-evento">
-          <h3>Festival Cultural (fictício)</h3>
-          <span class="meta">31/10/2026, 08:00 — Pátio central (fictício)</span>
+          <h3>Viagem pedagógica (fictícia)</h3>
+          <span class="meta">08/12/2026, 07:30 — saída da escola (fictício)</span>
           <span class="estado estado--confirmada">Confirmada</span>
           <span class="botoes-acao">
             <button class="secundario" type="button" disabled>Cancelar inscrição</button>
@@ -43,8 +44,8 @@
           <small>O cancelamento real pela própria interface é da etapa 7 (decisão F-5).</small>
         </li>
         <li class="cartao-evento">
-          <h3>Torres de ciências (fictício)</h3>
-          <span class="meta">28/10/2026, 14:00 — Lab. de ciências (fictício)</span>
+          <h3>Feira de profissões (fictícia)</h3>
+          <span class="meta">05/12/2026, 09:00 — Ginásio (fictício)</span>
           <span class="estado estado--analise">Em análise</span>
           <p><small>O servidor confirma a análise (vagas/prazo checados, D-015).</small></p>
         </li>
@@ -54,28 +55,30 @@
     <div id="painelHistorico" class="painel-aba" role="tabpanel" hidden>
       <ul class="lista-eventos">
         <li class="cartao-evento">
-          <h3>Olimpíada de matemática (fictício)</h3>
-          <span class="meta">12/09/2026 (fictício — evento realizado)</span>
+          <h3>Viagem pedagógica — 2025 (fictícia)</h3>
+          <span class="meta">Setembro/2025 (fictício — evento realizado)</span>
           <span class="estado estado--confirmada">Confirmada</span>
         </li>
         <li class="cartao-evento">
-          <h3>Mostra de ciências (fictício)</h3>
+          <h3>Feira de profissões — ago/2026 (fictícia)</h3>
           <span class="meta">05/08/2026 (fictício — cancelada antes do evento)</span>
           <span class="estado estado--cancelada">Cancelada</span>
         </li>
       </ul>
     </div>
 
-    <a class="voltar" href="/">← Voltar ao calendário</a>
+    <a class="voltar" href="/">← Voltar ao início</a>
   </main>
 
   <nav class="navegacao-inferior" aria-label="Navegação inferior (celular)">
     <a href="/"><strong>⌂</strong>Início</a>
-    <a href="/#calendario"><strong>▣</strong>Calendário</a>
+    <a href="/calendario.html"><strong>▣</strong>Calendário</a>
     <a href="/#turmas"><strong>☰</strong>Turmas</a>
     <a href="/inscricoes.html" aria-current="page"><strong>✓</strong>Inscrições</a>
     <a href="/sobre.html"><strong>ℹ</strong>Sobre</a>
   </nav>
+
+  <div class="faixa-sessao" id="faixaSessao"><span>Sessão de demonstração</span></div>
 
   <footer class="rodape">CEPK Eventos — protótipo visual (redesign 2026-10-28).</footer>
 
@@ -97,6 +100,7 @@
       });
     });
   </script>
+  <script defer src="/js/sessao.js"></script>
   <script defer src="/js/offline.js"></script>
 </body>
 </html>
