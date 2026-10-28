@@ -106,6 +106,7 @@ Códigos HTTP utilizados: `200 OK`, `201 Created`, `204 No Content`, `400 → 49
   alunos; nomes de inscritos aparecem apenas para `professor_autorizado`/`admin`.
 - **404 em vez de 403** para recursos de outras turmas (§3.2/§3.3): o sistema não
   confirma a existência do recurso para quem não deve vê-lo (CA-03).
+  **✅ Confirmado pelo autor em 2026-10-28.**
 - **Sessão** carrega o mínimo (id + papéis); dados de identidade vêm do banco a cada
   interação de escrita — permissions revogam aplicam imediatamente.
 - 🔴 Retenção/tratamento de ex-alunos: F-14.
