@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CEPK Eventos</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="manifest" href="/pwa/manifest.json">
+</head>
+<body>
+  <main class="container">
+    <h1>CEPK Eventos</h1>
+    <p>Estrutura inicial — o calendário geral e o acesso às turmas chegam
+       nas próximas etapas (RF01).</p>
+  </main>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/pwa/service-worker.js');
+    }
+  </script>
+</body>
+</html>

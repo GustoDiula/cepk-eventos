@@ -1,0 +1,14 @@
+{
+  "name": "cepk-eventos",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PWA para centralizar os eventos do Colégio Estadual Presidente Kennedy (CEPK)",
+  "scripts": {
+    "dev": "node --watch --env-file-if-exists=.env src/backend/server.js",
+    "start": "node --env-file-if-exists=.env src/backend/server.js",
+    "test": "node --test \"tests/**/*.test.mjs\""
+  },
+  "dependencies": {
+    "express": "^5.3.0"
+  }
+}
