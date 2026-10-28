@@ -18,6 +18,7 @@ Serve para justificar escolhas durante o desenvolvimento do curso.
 | D-009 | 2026-10-28 | Elegibilidade de inscrição: aluno pode inscrever-se em eventos gerais e da própria turma; eventos de outras turmas não são elegíveis | Decisão do autor em auditoria (resolve F-4/F-10) | ✅ Decidida |
 | D-010 | 2026-10-28 | Sessão via cookie assinado `httpOnly` (em vez de JWT/localStorage) | Impede leitura do token por JavaScript; logout real para computadores compartilhados (AUD-06) | ✅ Decidida |
 | D-011 | 2026-10-28 | PostgreSQL do ambiente local por instalação direta (sem Docker) | Escolha do autor para o ambiente de desenvolvimento | ✅ Decidida |
+| D-012 | 2026-10-28 | Modo de teste de sessão liberado no dev enquanto F-2 pendência; bloqueado em produção (`NODE_ENV`) | Permitir progresso do plano (etapa 4) sem o provedor institucional | ✅ Decidida |
 
 ## Pendências (avisos ao autor)
 
