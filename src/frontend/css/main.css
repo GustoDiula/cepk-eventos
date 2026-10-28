@@ -1,11 +1,198 @@
-/* Base de estilo — etapa 3 expande (RNF01: responsividade). */
+/* ============================================================
+   CEPK Eventos — estilo base (etapa 3)
+   Mobile-first; media queries em 768px e 1440px (CA-07/RNF01).
+   Sem frameworks — conforme arquitetura v2.0 (HTML/CSS/JS puros).
+   ============================================================ */
+
 :root {
-  font-family: system-ui, -apple-system, sans-serif;
-  color: #1c2430;
-  background: #f7f8fa;
+  --cor-tinta: #1c2430;
+  --cor-fundo: #f7f8fa;
+  --cor-primaria: #0a1f44;
+  --cor-acento: #1b6ca8;
+  --cor-aviso: #7a4900;
+  --cor-borda: #d7dce4;
+  --raio: 10px;
 }
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: var(--cor-tinta);
+  background: var(--cor-fundo);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Cabeçalho e navegação */
+.cabecalho {
+  background: var(--cor-primaria);
+  color: #fff;
+  padding: 0.9rem 1rem;
+}
+.cabecalho h1 {
+  margin: 0 0 0.4rem;
+  font-size: 1.25rem;
+}
+.cabecalho nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.cabecalho nav a {
+  color: #dce8f4;
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--raio);
+}
+.cabecalho nav a:hover,
+.cabecalho nav a:focus-visible {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+/* Área principal */
 main.container {
-  max-width: 720px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
   padding: 1rem;
+  flex: 1;
+}
+main.container h2 {
+  font-size: 1.1rem;
+  margin: 1.25rem 0 0.5rem;
+}
+
+.aviso {
+  background: #fff6e5;
+  color: var(--cor-aviso);
+  border: 1px solid #ffd98a;
+  border-radius: var(--raio);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+/* Listas de eventos */
+.lista-eventos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+.cartao-evento {
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: 0.75rem 1rem;
+}
+.cartao-evento h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+.cartao-evento small,
+.cartao-evento .meta {
+  display: block;
+  color: #5a6572;
+  font-size: 0.85rem;
+}
+.cartao-evento .selo {
+  display: inline-block;
+  background: #eaf3fb;
+  color: var(--cor-acento);
+  border-radius: var(--raio);
+  font-size: 0.75rem;
+  padding: 0.1rem 0.5rem;
+  margin-top: 0.35rem;
+}
+
+/* Grade de turmas */
+.grade-turmas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: 1fr;
+}
+.cartao-turma {
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: 0.75rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  color: var(--cor-tinta);
+}
+.cartao-turma:hover,
+.cartao-turma:focus-visible {
+  border-color: var(--cor-acento);
+}
+
+/* Detalhe do evento */
+.detalhe-evento {
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: 1rem;
+}
+.detalhe-evento dl {
+  margin: 1rem 0;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.4rem 1rem;
+}
+.detalhe-evento dt {
+  font-weight: 600;
+}
+.detalhe-evento dd {
+  margin: 0;
+}
+button.desabilitada {
+  background: #c9d2dc;
+  color: #45505c;
+  border: 0;
+  border-radius: var(--raio);
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  cursor: not-allowed;
+}
+
+.voltar {
+  display: inline-block;
+  margin-top: 1rem;
+  text-decoration: none;
+  color: var(--cor-acento);
+}
+
+/* Rodapé */
+.rodape {
+  padding: 1rem;
+  text-align: center;
+  color: #5a6572;
+  font-size: 0.8rem;
+  border-top: 1px solid var(--cor-borda);
+}
+
+/* Tablet: 768px */
+@media (min-width: 768px) {
+  main.container {
+    max-width: 720px;
+  }
+  .grade-turmas {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Desktop: 1440px */
+@media (min-width: 1440px) {
+  main.container {
+    max-width: 1000px;
+  }
 }

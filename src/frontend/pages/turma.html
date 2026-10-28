@@ -7,9 +7,41 @@
   <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
-  <main class="container">
+  <header class="cabecalho">
     <h1>Eventos da turma</h1>
-    <p>Placeholder — implementado na etapa 5 (RF03/RF04/RF16).</p>
+    <nav aria-label="Navegação principal">
+      <ul>
+        <li><a href="/">Início</a></li>
+        <li><a href="/login.html">Entrar</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h2>Turma exemplo A <small>(fictícia)</small></h2>
+    <p class="aviso">Dados fictícios — nesta etapa não existe verificação de vínculo;
+       o isolamento por perfil (RF05) entra na etapa 5, validado no servidor.</p>
+
+    <ul class="lista-eventos">
+      <li class="cartao-evento">
+        <h3>Reforço de matemática (fictício)</h3>
+        <span class="meta">19/11/2026, 13:30 — Sala 12 (fictício)</span>
+        <span class="meta">Sem inscrição</span>
+        <span class="selo">Exclusivo da turma</span>
+        <a href="/evento.html">Ver detalhe</a>
+      </li>
+      <li class="cartao-evento">
+        <h3>Reunião de pais (fictício)</h3>
+        <span class="meta">27/11/2026, 19:00 — Auditório (fictício)</span>
+        <span class="meta">Inscrição requerida: 18/40 vagas fictícias</span>
+        <span class="selo">Exclusivo da turma</span>
+        <a href="/evento.html">Ver detalhe</a>
+      </li>
+    </ul>
+
+    <a class="voltar" href="/">← Voltar ao calendário</a>
   </main>
+
+  <footer class="rodape">CEPK Eventos — maquete visual da etapa 3.</footer>
 </body>
 </html>

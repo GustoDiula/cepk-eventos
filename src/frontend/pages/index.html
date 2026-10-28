@@ -8,11 +8,57 @@
   <link rel="manifest" href="/pwa/manifest.json">
 </head>
 <body>
-  <main class="container">
+  <header class="cabecalho">
     <h1>CEPK Eventos</h1>
-    <p>Estrutura inicial — o calendário geral e o acesso às turmas chegam
-       nas próximas etapas (RF01).</p>
+    <nav aria-label="Navegação principal">
+      <ul>
+        <li><a href="/" aria-current="page">Início</a></li>
+        <li><a href="/turma.html">Turma exemplo</a></li>
+        <li><a href="/login.html">Entrar</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h2>Calendário geral</h2>
+    <p class="aviso">Dados fictícios de demonstração — reais virão do banco (etapa 5).
+       Acesso sem login depende da decisão F-1.</p>
+
+    <ul class="lista-eventos">
+      <li class="cartao-evento">
+        <h3>Festival Cultural (fictício)</h3>
+        <span class="meta">20/11/2026, 08:00 — Pátio central (fictício)</span>
+        <span class="meta">Inscrição requerida: 45/120 vagas fictícias</span>
+        <span class="selo">Geral</span>
+        <a href="/evento.html">Ver detalhe</a>
+      </li>
+      <li class="cartao-evento">
+        <h3>Roda de leitura (fictício)</h3>
+        <span class="meta">25/11/2026, 10:00 — Biblioteca (fictício)</span>
+        <span class="meta">Sem inscrição</span>
+        <span class="selo">Geral</span>
+      </li>
+      <li class="cartao-evento">
+        <h3>Torres de ciências (fictício)</h3>
+        <span class="meta">28/11/2026, 14:00 — Lab. de ciências (fictício)</span>
+        <span class="meta">Inscrição requerida: prazo 15/11/2026 (fictício)</span>
+        <span class="selo">Geral</span>
+        <a href="/evento.html">Ver detalhe</a>
+      </li>
+    </ul>
+
+    <h2>Turmas</h2>
+    <ul class="grade-turmas">
+      <li><a class="cartao-turma" href="/turma.html">Turma exemplo A</a></li>
+      <li><a class="cartao-turma" href="/turma.html">Turma exemplo B</a></li>
+      <li><a class="cartao-turma" href="/turma.html">Turma exemplo C</a></li>
+    </ul>
   </main>
+
+  <footer class="rodape">
+    CEPK Eventos — estrutura inicial (etapa 3). Nenhuma tela busca dados do servidor ainda.
+  </footer>
+
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/pwa/service-worker.js');

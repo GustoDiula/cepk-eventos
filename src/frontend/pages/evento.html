@@ -7,9 +7,36 @@
   <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
+  <header class="cabecalho">
+    <h1>Detalhe do evento</h1>
+    <nav aria-label="Navegação principal">
+      <ul>
+        <li><a href="/">Início</a></li>
+        <li><a href="/login.html">Entrar</a></li>
+      </ul>
+    </nav>
+  </header>
+
   <main class="container">
-    <h1>Evento</h1>
-    <p>Placeholder — detalhe e inscrição implementados na etapa 7 (RF15/RF07).</p>
+    <article class="detalhe-evento">
+      <h2>Festival Cultural (fictício)</h2>
+      <dl>
+        <dt>Data e hora</dt><dd>20/11/2026, 08:00 (fictício)</dd>
+        <dt>Local</dt><dd>Pátio central (fictício)</dd>
+        <dt>Inscrições</dt><dd>45/120 vagas — fictício (RF15: indicador 🟡)</dd>
+        <dt>Prazo</dt><dd>10/11/2026, 18:00 (fictício)</dd>
+      </dl>
+      <p>Descrição fictícia para validar o layout do detalhe do evento.
+         O conteúdo real virá da API na etapa 5 (RF01/RF15).</p>
+      <p>
+        <button class="desabilitada" disabled>Inscrever-se</button>
+        <small> Habilitado na etapa 7 (RF07/RF08) — exige confirmação do servidor.</small>
+      </p>
+    </article>
+
+    <a class="voltar" href="/">← Voltar ao calendário</a>
   </main>
+
+  <footer class="rodape">CEPK Eventos — maquete visual da etapa 3.</footer>
 </body>
 </html>
