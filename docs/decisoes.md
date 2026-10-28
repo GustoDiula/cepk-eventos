@@ -16,6 +16,8 @@ Serve para justificar escolhas durante o desenvolvimento do curso.
 | D-007 | 2026-10-28 | Autorização explícita do autor para publicar o projeto no GitHub | O autor solicitou o envio para o GitHub nesta etapa | ✅ Decidida |
 | D-008 | 2026-10-28 | Modo offline da PWA: somente leitura com aviso "dados podem estar desatualizados"; inscrição exige conexão ativa; nada é enfileirado | Evita inscrição aparentar confirmada sem servidor (protege regra 9 de AGENTS.md); decisão do autor em auditoria | ✅ Decidida |
 | D-009 | 2026-10-28 | Elegibilidade de inscrição: aluno pode inscrever-se em eventos gerais e da própria turma; eventos de outras turmas não são elegíveis | Decisão do autor em auditoria (resolve F-4/F-10) | ✅ Decidida |
+| D-010 | 2026-10-28 | Sessão via cookie assinado `httpOnly` (em vez de JWT/localStorage) | Impede leitura do token por JavaScript; logout real para computadores compartilhados (AUD-06) | ✅ Decidida |
+| D-011 | 2026-10-28 | PostgreSQL do ambiente local por instalação direta (sem Docker) | Escolha do autor para o ambiente de desenvolvimento | ✅ Decidida |
 
 ## Pendências (avisos ao autor)
 
