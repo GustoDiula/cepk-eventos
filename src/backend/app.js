@@ -8,10 +8,17 @@ const raizFrontend = path.join(__dirname, '..', 'frontend');
 
 const app = express();
 
-// Frontend estático (arquitetura v2.0, cap. 2)
+// Frontend estático (arquitetura v2.0, cap. 2).
+// O cabeçalho Service-Worker-Allowed vem ANTES do static de /pwa —
+// sem ele o navegador limita o escopo do SW a /pwa/ (defeito verificado em 2026-10-28).
+app.use('/pwa', (req, res, next) => {
+  if (req.path.endsWith('service-worker.js')) {
+    res.setHeader('Service-Worker-Allowed', '/');
+  }
+  next();
+}, express.static(path.join(raizFrontend, 'pwa')));
 app.use('/css', express.static(path.join(raizFrontend, 'css')));
 app.use('/js', express.static(path.join(raizFrontend, 'js')));
-app.use('/pwa', express.static(path.join(raizFrontend, 'pwa')));
 app.use(express.static(path.join(raizFrontend, 'pages')));
 
 // API v1

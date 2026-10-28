@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CEPK Eventos</title>
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="manifest" href="/pwa/manifest.json">
+  <link rel="manifest" href="/pwa/manifest.webmanifest">
 </head>
 <body>
   <header class="cabecalho">
@@ -59,9 +59,10 @@
     CEPK Eventos — estrutura inicial (etapa 3). Nenhuma tela busca dados do servidor ainda.
   </footer>
 
+  <script defer src="/js/offline.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/pwa/service-worker.js');
+      navigator.serviceWorker.register('/pwa/service-worker.js', { scope: '/' });
     }
   </script>
 </body>

@@ -12,7 +12,9 @@ const caminhos = [
   { rota: '/turma.html', tipo: 'text/html', trecho: 'Turma exemplo' },
   { rota: '/evento.html', tipo: 'text/html', trecho: 'detalhe-evento' },
   { rota: '/css/main.css', tipo: 'text/css', trecho: '.cartao-evento' },
-  { rota: '/pwa/manifest.json', tipo: 'json', trecho: '"start_url"' },
+  { rota: '/pwa/manifest.webmanifest', tipo: 'json', trecho: '"start_url"' },
+  { rota: '/pwa/icons/icon-192.png', tipo: 'image/png', trecho: null },
+  { rota: '/pwa/icons/icon-512.png', tipo: 'image/png', trecho: null },
 ];
 
 test('todas as páginas e recursos estáticos respondem 200 (etapa 3)', async () => {
@@ -24,8 +26,10 @@ test('todas as páginas e recursos estáticos respondem 200 (etapa 3)', async ()
     for (const { rota, tipo, trecho } of caminhos) {
       const resposta = await fetch(`http://127.0.0.1:${port}${rota}`);
       assert.equal(resposta.status, 200, `falhou em ${rota}`);
-      const texto = await resposta.text();
-      assert.ok(texto.includes(trecho), `${rota} não contém "${trecho}"`);
+      if (trecho) {
+        const texto = await resposta.text();
+        assert.ok(texto.includes(trecho), `${rota} não contém "${trecho}"`);
+      }
       if (tipo) {
         assert.ok(
           resposta.headers.get('content-type').includes(tipo),

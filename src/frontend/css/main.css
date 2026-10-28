@@ -180,6 +180,19 @@ button.desabilitada {
   border-top: 1px solid var(--cor-borda);
 }
 
+/* Banner offline (RF17/D-008) — sticky no topo de qualquer página */
+#bannerOffline {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #7a1e1e;
+  color: #fff;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  line-height: 1.3;
+  text-align: center;
+}
+
 /* Tablet: 768px */
 @media (min-width: 768px) {
   main.container {
