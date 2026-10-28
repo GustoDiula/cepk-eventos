@@ -14,6 +14,8 @@ Serve para justificar escolhas durante o desenvolvimento do curso.
 | D-005 | 2026-10-28 | Criar documentação (AGENTS.md + docs/) e aprovar requisitos antes de programar | Engenharia de requisitos: reduz retrabalho | ✅ Decidida |
 | D-006 | 2026-10-28 | Repositório local iniciado com Git | Versionar histórico local | ✅ Decidida |
 | D-007 | 2026-10-28 | Autorização explícita do autor para publicar o projeto no GitHub | O autor solicitou o envio para o GitHub nesta etapa | ✅ Decidida |
+| D-008 | 2026-10-28 | Modo offline da PWA: somente leitura com aviso "dados podem estar desatualizados"; inscrição exige conexão ativa; nada é enfileirado | Evita inscrição aparentar confirmada sem servidor (protege regra 9 de AGENTS.md); decisão do autor em auditoria | ✅ Decidida |
+| D-009 | 2026-10-28 | Elegibilidade de inscrição: aluno pode inscrever-se em eventos gerais e da própria turma; eventos de outras turmas não são elegíveis | Decisão do autor em auditoria (resolve F-4/F-10) | ✅ Decidida |
 
 ## Pendências (avisos ao autor)
 
@@ -22,7 +24,7 @@ Serve para justificar escolhas durante o desenvolvimento do curso.
 | P-1 | Confirmar o provedor institucional de autenticação | Backend (login), requisitos F-2 |
 | P-2 | Definir hospedagem com HTTPS (backend) | Publicação final |
 | P-3 | Fornecer dados reais das turmas | Cadastro de turmas (F-6) |
-| P-4 | Decidir comportamento de cancelamento de evento e de inscrição | Regras de negócio (F-3, F-4, F-5) |
+| P-4 | Decidir comportamento de cancelamento de evento e de inscrição | Regras de negócio (F-3, F-5). *F-4 resolvida por D-009 em 2026-10-28* |
 
 > Novas decisões devem ser **adicionadas com novo ID**; nunca sobrescrever uma
 > decisão anterior (histórico preservado).
