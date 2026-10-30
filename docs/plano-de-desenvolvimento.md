@@ -26,6 +26,14 @@ Vinculado a: `requisitos.md` v1.1 · `arquitetura.md` v2.0 · `modelo-de-dados.m
 > Marcações 🔴: etapa (ou parte dela) **não inicia** sem a decisão pendente listada.
 > Depois de F-8 respondida, atualizar `api.md` §3.5.
 
+> **Progresso (2026-10-29):** etapas **0–5 executadas** e testadas (suíte completa
+> 20/20, executada 3× com código 0; inclui os 8 grupos de teste do autor em
+> `tests/integration/auth.db.test.mjs`). A etapa 4 está completa no formato
+> PARCIAL previsto: login real por provedor (F-2) continua pendente — hoje existe
+> login local de demonstração com sessão no PostgreSQL (D-024). As etapas 9–10 e
+> as inscrições (7) aguardam decisões/código; publicar/editar evento (6) é o
+> próximo passo de backend.
+
 ## 2. Regras de execução
 
 1. **Uma etapa por vez.** Nada se antecipa; a cada fim: relatório ao autor (o que
@@ -43,3 +51,4 @@ Vinculado a: `requisitos.md` v1.1 · `arquitetura.md` v2.0 · `modelo-de-dados.m
 | Versão | Data | Descrição |
 |---|---|---|
 | 1.0 | 2026-10-28 | Plano de 10 etapas aprovado (inclui decisão D-012 — modo de teste de sessão em dev, bloqueado em produção) |
+| 1.1 | 2026-10-29 | Etapas 0–5 executadas: PostgreSQL portátil (D-011), saúde, schema + semente de demonstração IDEMPOTENTE, frontend dinâmico por sessão, login real local com sessão no PG (D-024 — D-018 desusada) e consulta por vínculos com isolamento CA-03 (D-025). 3 defeitos reais achados/corrigidos em verificação: corrida da sessão (resposta só após gravar), fuso da API (-03:00) e não-idempotência do seed de eventos (621→27) |

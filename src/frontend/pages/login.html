@@ -23,25 +23,38 @@
     <article class="detalhe-evento">
       <h2>Entrar</h2>
 
-      <!-- Login de DEMONSTRAÇÃO (D-018/D-012): a senha digitada é DESCARTADA.
-           Não é autenticação real: não valida, não envia, não guarda. -->
-      <form class="form-login" id="formDemo">
-        <label for="campoEmail">E-mail (qualquer e-mail serve na demonstração)</label>
-        <input id="campoEmail" name="email" type="email" autocomplete="off"
-               placeholder="ex.: nome.sobrenome@escola.pr.gov.br" required>
-        <label for="campoSenha">Senha (NUNCA é guardada ou enviada — abandonada aqui)</label>
-        <input id="campoSenha" name="senha" type="password" autocomplete="off"
-               placeholder="não é usada nesta demonstração" required>
-        <button class="primario" type="submit">Entrar (demonstração)</button>
+      <p id="sessaoAtiva" hidden>Você já tem sessão iniciada — <a href="/turma.html">ir para Turmas</a>.</p>
+
+      <!-- Login REAL: as credenciais são verificadas pelo SERVIDOR
+           (GET confirma a sessão por cookie HttpOnly; nunca no navegador). -->
+      <form class="form-login" id="formEntrar">
+        <label for="campoEmail">E-mail institucional</label>
+        <input id="campoEmail" name="email" type="email" autocomplete="email"
+               placeholder="ex.: nome@escola.pr.gov.br" required>
+        <label for="campoSenha">Senha</label>
+        <input id="campoSenha" name="senha" type="password" autocomplete="current-password" required>
+        <button class="primario" type="submit">Entrar</button>
+        <p class="aviso" id="mensagem" role="alert" hidden></p>
       </form>
 
-      <p class="aviso"><strong>Por que não é real?</strong> A autenticação institucional
-         (contas @escola) depende do serviço de contas da escola e da parte do
-         servidor que valida o acesso — ambas ainda a construir. Enquanto isso,
-         qualquer nome digitado entra como <em>demonstração</em> e aparece
-         marcado "(demo)" no site.</p>
-      <p>Depois, com o login REAL, o aluno é direcionado automaticamente à sua
-         turma e a sessão fica protegida por cookie seguro no servidor.</p>
+      <!-- Contas de demonstração: e-mails de teste (domínio .test) e senha
+           inicial definida no ambiente local do responsável — NUNCA no site. -->
+      <h3>Contas de demonstração <small>(apenas para testes locais)</small></h3>
+      <p>Estas contas são fictícias e servem para demonstrar os perfis do sistema.
+         A senha inicial de todas está definida no arquivo local do servidor
+         (não circula pelo site); troque-a antes de qualquer uso real.</p>
+      <ul class="lista-contas-demo">
+        <li><code>aluno1@cepk-eventos.test</code> — Aluno Demo 1, turma 1º A</li>
+        <li><code>aluno2@cepk-eventos.test</code> — Aluno Demo 2, turma 1º B</li>
+        <li><code>prof.geografia@cepk-eventos.test</code> — Professora de Geografia (1º A, 1º B, 1º C)</li>
+        <li><code>pedagoga1@cepk-eventos.test</code> — Pedagoga 1 (10 turmas)</li>
+        <li><code>diretora@cepk-eventos.test</code> — Diretora (todas as turmas)</li>
+      </ul>
+
+      <p class="aviso">Tentativas excessivas de acesso são bloqueadas por alguns
+         minutos (proteção padrão de sistemas profissionais).</p>
+      <p>O login institucional da escola (@escola.pr.gov.br) continua em
+         construção e vai substituir estas contas de teste quando estiver pronto.</p>
     </article>
     <a class="voltar" href="/">← Voltar ao início</a>
   </main>
@@ -53,23 +66,60 @@
     <a href="/sobre.html"><strong>ℹ</strong>Sobre</a>
   </nav>
 
-  <div class="faixa-sessao" id="faixaSessao"><span>Sessão de demonstração</span></div>
+  <div class="faixa-sessao" id="faixaSessao"><span>Sessão</span></div>
 
-  <footer class="rodape">CEPK Eventos — protótipo visual (redesign 2026-10-28).</footer>
+  <footer class="rodape">CEPK Eventos — protótipo (redesign 2026-10-28).</footer>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      document.getElementById('formDemo').addEventListener('submit', function (evento) {
-        evento.preventDefault(); // NADA é enviado
-        var email = document.getElementById('campoEmail').value.trim();
-        // A senha lida aqui morre nesta função (não é salva em lugar nenhum).
-        var parteNome = email.split('@')[0] || 'Aluno Demo';
-        var nome = parteNome
-          .replace(/[._-]+/g, ' ')
-          .replace(/\b\w/g, function (c) { return c.toUpperCase(); });
-        window.CEPKSessaoDemo.entrar(nome, email);
-        location.href = '/';
+      var form = document.getElementById('formEntrar');
+      var mensagem = document.getElementById('mensagem');
+      var botao = form.querySelector('button[type="submit"]');
+
+      form.addEventListener('submit', async function (evento) {
+        evento.preventDefault(); // nada sai daqui sem passar pelo servidor
+        mensagem.hidden = true;
+        botao.disabled = true;
+        try {
+          var resposta = await fetch('/api/v1/auth/entrar', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: document.getElementById('campoEmail').value,
+              senha: document.getElementById('campoSenha').value,
+            }),
+          });
+          if (resposta.ok) {
+            location.href = '/turma.html'; // direciona ao próprio perfil
+            return;
+          }
+          var dados = null;
+          try { dados = await resposta.json(); } catch { /* corpo vazio */ }
+          if (resposta.status === 429) {
+            mensagem.textContent = (dados && dados.erro && dados.erro.mensagem) ||
+              'Muitas tentativas. Aguarde alguns minutos e tente de novo.';
+          } else if (resposta.status === 401) {
+            mensagem.textContent = 'E-mail ou senha incorretos.';
+          } else {
+            mensagem.textContent = 'Não foi possível entrar. Tente de novo em instantes.';
+          }
+          mensagem.hidden = false;
+        } catch {
+          // Sem rede: NUNCA se confirma login por conta própria (regra 9 do AGENTS)
+          mensagem.textContent = 'Sem conexão: entre novamente quando a rede estiver disponível.';
+          mensagem.hidden = false;
+        } finally {
+          document.getElementById('campoSenha').value = '';
+          botao.disabled = false;
+        }
       });
+
+      if (window.CEPKSessao) {
+        window.CEPKSessao.consultar().then(function (usuario) {
+          if (usuario) document.getElementById('sessaoAtiva').hidden = false;
+        });
+      }
     });
   </script>
   <script defer src="/js/sessao.js"></script>

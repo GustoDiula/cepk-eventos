@@ -1,6 +1,7 @@
 // Configuração por variáveis de ambiente (RNF05): segredos nunca no código.
 // Em production, DATABASE_URL e SESSION_SECRET são obrigatórios.
-// Em development/test, a ausência não impede o esqueleto de subir.
+// Em development/test, a ausência NÃO impede o esqueleto de subir (páginas
+// estáticas e /health continuam funcionando sem banco).
 
 const ambiente = process.env.NODE_ENV || 'development';
 const porta = Number(process.env.PORT || 3000);
@@ -20,4 +21,8 @@ module.exports = {
   porta,
   baseUrl: process.env.BASE_URL || `http://localhost:${porta}`,
   databaseUrl: process.env.DATABASE_URL || null,
+  // Sessão (D-010/D-024): em development cai para um segredo efêmero
+  // (sessões não sobrevivem ao reinício — aceitável localmente);
+  // production EXIGE SESSION_SECRET (checado no bloco acima).
+  sessionSecret: process.env.SESSION_SECRET || 'desenvolvimento-efemero-nao-usar-em-producao',
 };

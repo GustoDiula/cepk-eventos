@@ -1,101 +1,91 @@
-// Sessão de DEMONSTRAÇÃO (D-018, D-012) — APENAS FRONTAL.
+// Sessão REAL de servidor (D-024) — substitui o login de navegador (D-018).
 //
-// Regras permanentes:
-//  1) NENHUMA senha é enviada ao servidor ou guardada aqui — o campo de senha
-//     do formulário é lido e descartado na hora (queremos SÓ o nome para exibir).
-//  2) A sessão fica no localStorage do navegador, marcada como "demo", e NÃO
-//     é um login real. Autenticação de verdade: etapa 4, com provedor
-//     institucional (F-2) e cookie httpOnly (D-010).
-//  3) Privilégio nenhum decorre daqui: e-mail digitado não dá acesso a nada
-//     (D-004) — páginas ainda não conversam com servidor algum.
+// Princípios:
+//  • NENHUMA identidade ou senha vive no navegador: a sessão é um cookie
+//    HttpOnly assinado que o navegador envia sozinho; este script só EXIBE
+//    o que o SERVIDOR confirmar (GET /api/v1/auth/me).
+//  • Sem resposta confirmada (401/offline), a interface trata como visitante.
+//    A lista de turmas e os eventos NUNCA são decididos aqui — quem mostra
+//    quem tem acesso a o quê é o backend (regra 8 do AGENTS.md).
 
 (function () {
   'use strict';
 
-  const CHAVE = 'cepkSessaoDemo';
+  // Rótulos de papel SÓ para exibição — não decidem nada
+  const ROTULO_PAPEL = {
+    aluno: 'Aluno',
+    professor: 'Professor(a)',
+    pedagogia: 'Pedagogia',
+    direcao: 'Direção',
+  };
 
-  function ler() {
+  async function consultar() {
     try {
-      const bruto = localStorage.getItem(CHAVE);
-      if (!bruto) return null;
-      const dados = JSON.parse(bruto);
-      if (!dados || dados.demo !== true) return null;
-      return { nome: String(dados.nome), email: String(dados.email), demo: true };
+      const resposta = await fetch('/api/v1/auth/me', { credentials: 'same-origin' });
+      if (!resposta.ok) return null;
+      const dados = await resposta.json();
+      return dados && dados.usuario ? dados.usuario : null;
     } catch {
-      return null;
+      return null; // offline ou falha: exibido como visitante (nada é inventado)
     }
   }
 
-  function entrar(nome, email) {
-    localStorage.setItem(
-      CHAVE,
-      JSON.stringify({ nome: String(nome), email: String(email), demo: true })
-    );
+  async function sair() {
+    try {
+      // O COMANDO de terminar a sessão vai ao SERVIDOR; só volta quando ele
+      // confirma (a sessão é dele, não deste navegador).
+      await fetch('/api/v1/auth/sair', { method: 'POST', credentials: 'same-origin' });
+    } catch {
+      // sem rede: nada a fazer aqui além de sair da tela
+    }
+    location.href = '/';
   }
 
-  function sair() {
-    localStorage.removeItem(CHAVE);
+  function blocoSessao(alvo, usuario) {
+    alvo.replaceChildren();
+    if (usuario) {
+      const quem = document.createElement('span');
+      quem.className = 'nome-demo'; // estilo existente da sidebar
+      const papel = ROTULO_PAPEL[usuario.papel] || '';
+      quem.textContent = usuario.nome + (papel ? ' · ' + papel : '');
+      const botaoSair = document.createElement('button');
+      botaoSair.className = 'sair-demo';
+      botaoSair.type = 'button';
+      botaoSair.textContent = 'Sair';
+      botaoSair.addEventListener('click', sair);
+      alvo.appendChild(quem);
+      alvo.appendChild(botaoSair);
+    } else {
+      alvo.innerHTML = '<a class="entrar" href="/login.html">Entrar</a>';
+    }
   }
 
-  // Renderiza o bloco de sessão na sidebar (#areaSessao, presente em todas as
-  // páginas) e a faixa indicativa no celular (.faixa-sessao, criada aqui).
-  function renderizar() {
+  async function renderizar() {
+    const usuario = await consultar();
+    document.documentElement.classList.toggle('com-sessao', !!usuario);
+
     const alvo = document.getElementById('areaSessao');
-    const sessao = ler();
+    if (alvo) blocoSessao(alvo, usuario);
 
-    document.documentElement.classList.toggle('com-sessao-demo', !!sessao);
-
-    if (alvo) {
-      if (sessao) {
-        alvo.innerHTML = '';
-
-        const quem = document.createElement('span');
-        quem.className = 'nome-demo';
-        quem.textContent = sessao.nome + ' (demo)';
-        quem.title = 'Sessão de demonstração — e-mail digitado: ' + sessao.email;
-
+    // Faixa no celular (aparece só com sessão ativa — ver main.css)
+    const faixa = document.getElementById('faixaSessao');
+    if (faixa) {
+      faixa.replaceChildren();
+      if (usuario) {
+        const rotulo = document.createElement('span');
+        const papel = ROTULO_PAPEL[usuario.papel] || '';
+        rotulo.textContent = usuario.nome + (papel ? ' · ' + papel : '');
+        faixa.appendChild(rotulo);
         const botaoSair = document.createElement('button');
         botaoSair.className = 'sair-demo';
         botaoSair.type = 'button';
         botaoSair.textContent = 'Sair';
-        botaoSair.addEventListener('click', function () {
-          sair();
-          location.reload();
-        });
-
-        alvo.appendChild(quem);
-        alvo.appendChild(botaoSair);
-      } else {
-        alvo.innerHTML =
-          '<a class="entrar" href="/login.html">Entrar</a>';
-      }
-    }
-    // Faixa do celular: mostra o usuário demo com Sair (fica escondida no desktop)
-    const faixa = document.getElementById('faixaSessao');
-    if (faixa) {
-      faixa.innerHTML = '';
-      if (sessao) {
-        const rotulo = document.createElement('span');
-        rotulo.textContent = 'DEMO: ' + sessao.nome;
-        faixa.appendChild(rotulo);
-        const botaoSairFaixa = document.createElement('button');
-        botaoSairFaixa.className = 'sair-demo';
-        botaoSairFaixa.type = 'button';
-        botaoSairFaixa.textContent = 'Sair';
-        botaoSairFaixa.addEventListener('click', function () {
-          sair();
-          location.reload();
-        });
-        faixa.appendChild(botaoSairFaixa);
-      } else {
-        const linkEntrar = document.createElement('a');
-        linkEntrar.href = '/login.html';
-        linkEntrar.textContent = 'Entrar (modo demonstração)';
-        faixa.appendChild(linkEntrar);
+        botaoSair.addEventListener('click', sair);
+        faixa.appendChild(botaoSair);
       }
     }
   }
 
-  window.CEPKSessaoDemo = { ler, entrar, sair, renderizar };
+  window.CEPKSessao = { consultar, sair, renderizar };
   document.addEventListener('DOMContentLoaded', renderizar);
 })();

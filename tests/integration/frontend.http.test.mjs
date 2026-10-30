@@ -1,4 +1,5 @@
-// Teste de integração da etapa 3: páginas estáticas e recursos do frontend.
+// Teste de integração do frontend: páginas estáticas, recursos e auditorias
+// das decisões vigentes (sessão real D-24 substitui a de navegador D-18).
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
@@ -9,19 +10,19 @@ const require = createRequire(import.meta.url);
 const caminhos = [
   { rota: '/', tipo: 'text/html', trecho: '<title>CEPK Eventos</title>' },
   { rota: '/login.html', tipo: 'text/html', trecho: 'demonstração' },
-  { rota: '/turma.html', tipo: 'text/html', trecho: 'Turma 1º Ano A' },
+  { rota: '/turma.html', tipo: 'text/html', trecho: 'Minhas turmas' },
   { rota: '/evento.html', tipo: 'text/html', trecho: 'detalhe-evento' },
   { rota: '/inscricoes.html', tipo: 'text/html', trecho: 'Minhas inscrições' },
   { rota: '/sobre.html', tipo: 'text/html', trecho: 'Sobre o CEPK Eventos' },
   { rota: '/css/main.css', tipo: 'text/css', trecho: '.cartao-evento' },
   { rota: '/js/calendario.js', tipo: 'javascript', trecho: 'data-calendario' },
-  { rota: '/js/sessao.js', tipo: 'javascript', trecho: 'cepkSessaoDemo' },
+  { rota: '/js/sessao.js', tipo: 'javascript', trecho: 'CEPKSessao' },
   { rota: '/pwa/manifest.webmanifest', tipo: 'json', trecho: '"start_url"' },
   { rota: '/pwa/icons/icon-192.png', tipo: 'image/png', trecho: null },
   { rota: '/pwa/icons/icon-512.png', tipo: 'image/png', trecho: null },
 ];
 
-test('todas as páginas e recursos estáticos respondem 200 (etapa 3)', async () => {
+test('todas as páginas e recursos estáticos respondem 200', async () => {
   const app = require('../../src/backend/app.js');
   const servidor = http.createServer(app);
   await new Promise((resolver) => servidor.listen(0, '127.0.0.1', resolver));
@@ -62,20 +63,34 @@ test('manifest e service-worker sem conteúdo sensível (auditoria básica)', as
   }
 });
 
-test('sessão de demonstração: nada é enviado pela rede e senha nunca é armazenada (D-018)', async () => {
+test('sessão REAL: nada de identidade/senha guardada no navegador (substitui o login local D-018)', async () => {
   const app = require('../../src/backend/app.js');
   const servidor = http.createServer(app);
   await new Promise((resolver) => servidor.listen(0, '127.0.0.1', resolver));
   try {
     const { port } = servidor.address();
-    const sessao = await (await fetch(`http://127.0.0.1:${port}/js/sessao.js`)).text();
-    // código (fora de comentários) não pode chamar fetch
-    const semComentarios = sessao.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*/g, '');
-    assert.doesNotMatch(semComentarios, /fetch\s*\(/, 'sessao.js não deve fazer chamadas de rede');
-    const gravacao = sessao.match(/JSON\.stringify\(\{[^}]*\}\)/);
-    assert.ok(gravacao, 'gravação da sessão não encontrada');
-    assert.ok(/demo:\s*true/.test(gravacao[0]), 'sessão deve estar marcada como demo');
-    assert.ok(!/senha/i.test(gravacao[0]), 'senha NUNCA pode entrar no item salvo');
+    const base = `http://127.0.0.1:${port}`;
+
+    // sessao.js: consulta o SERVIDOR; não usa armazenamento do navegador
+    const original = await (await fetch(`${base}/js/sessao.js`)).text();
+    const codigo = original.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*/g, '');
+    assert.ok(codigo.includes('fetch'), 'sessao.js deve conversar com o servidor');
+    assert.match(codigo, /\/api\/v1\/auth\/me/, 'fonte da sessão é o servidor (/auth/me)');
+    assert.match(codigo, /\/api\/v1\/auth\/sair/, 'sair pede ao servidor para destruir a sessão');
+    assert.doesNotMatch(codigo, /localStorage|sessionStorage|document\s*\.\s*cookie/,
+      'nada de sessão pode ser guardado ou lido no navegador');
+
+    // login.html: lista e-mails de teste, NUNCA a senha
+    const paginaLogin = await (await fetch(`${base}/login.html`)).text();
+    assert.match(paginaLogin, /aluno1@cepk-eventos\.test/, 'conta de teste listada com e-mail');
+    assert.doesNotMatch(paginaLogin, /SENHA_DEMO/, 'nome da variável de senha não circula na página');
+    assert.ok(!/\b1234\b/.test(paginaLogin), 'a página de login NUNCA contém uma senha');
+    assert.doesNotMatch(paginaLogin, /localStorage|sessionStorage/, 'login não guarda nada no navegador');
+
+    // turma.html: a lista de turmas não vem do navegador
+    const paginaTurma = await (await fetch(`${base}/turma.html`)).text();
+    assert.doesNotMatch(paginaTurma, /localStorage|sessionStorage/, 'turma não guarda dados no navegador');
+    assert.match(paginaTurma, /\/api\/v1\/turmas/, 'turma busca as turmas do servidor');
   } finally {
     await new Promise((resolver) => servidor.close(resolver));
   }
@@ -94,10 +109,12 @@ test('calendário: navegação de meses e estado "passado" presentes (D-021)', a
     assert.ok(js.includes("'nav-mes'"), 'barra de navegação ausente');
     assert.ok(js.includes("'seta-mes'"), 'setas ◀ ▶ ausentes');
     assert.ok(js.includes("'hoje-mes'"), 'botão "hoje" ausente');
-    assert.ok(js.includes('limites.min') && js.includes('limites.max'), 'limites por intervalo do conjunto ausentes');
+    assert.ok(js.includes('limites.min') && js.includes('limites.max'), 'limites por intervalo ausentes');
     // estado passado: calculado na abertura, não congelado
-    assert.ok(js.includes("Já passou"), 'mensagem "Já passou" ausente');
-    assert.ok(js.includes("data-feriado"), 'marcação de cartões por data ausente');
+    assert.ok(js.includes('Já passou'), 'mensagem "Já passou" ausente');
+    assert.ok(js.includes('data-feriado'), 'marcação de cartões por data ausente');
+    // modo dinâmico (eventos do servidor) exportado
+    assert.ok(js.includes('CEPKCalendario'), 'acesso dinâmico ausente');
 
     const home = await (await fetch(`${base}/`)).text();
     const cartoes = home.match(/data-feriado="2026-\d{2}-\d{2}"/g) || [];
@@ -109,7 +126,32 @@ test('calendário: navegação de meses e estado "passado" presentes (D-021)', a
     }
 
     const sw = await (await fetch(`${base}/pwa/service-worker.js`)).text();
-    assert.ok(sw.includes('cepk-shell-v5'), 'service worker deve estar na versão cepk-shell-v5');
+    assert.ok(sw.includes('cepk-shell-v6'), 'service worker deve estar na versão cepk-shell-v6');
+  } finally {
+    await new Promise((resolver) => servidor.close(resolver));
+  }
+});
+
+test('rotas protegidas: sem sessão → 401 uniforme (mesmo sem banco configurado)', async () => {
+  const app = require('../../src/backend/app.js');
+  const servidor = http.createServer(app);
+  await new Promise((resolver) => servidor.listen(0, '127.0.0.1', resolver));
+  try {
+    const { port } = servidor.address();
+    const base = `http://127.0.0.1:${port}`;
+
+    const turmas = await fetch(`${base}/api/v1/turmas`);
+    assert.equal(turmas.status, 401);
+    assert.equal((await turmas.json()).erro.codigo, 'SESSAO_INVALIDA');
+
+    // login com e-mail inválido → rejeitado ANTES de qualquer consulta ao banco
+    const entrar = await fetch(`${base}/api/v1/auth/entrar`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email: 'sem-arroba', senha: 'x' }),
+    });
+    assert.equal(entrar.status, 401);
+    assert.equal((await entrar.json()).erro.codigo, 'CREDENCIAIS_INVALIDAS');
   } finally {
     await new Promise((resolver) => servidor.close(resolver));
   }

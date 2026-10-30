@@ -2,12 +2,13 @@
 //
 // Regras permanentes deste service worker:
 //  1) /api/** NUNCA é cacheado nem enfileirado — respostas do servidor são frescas;
-//  2) respostas privadas (sessão, perfil, listas de inscritos) NUNCA entram em cache
-//     — quando a autenticação existir (etapa 4+), estas ROTAS ficam fora da lista;
+//  2) respostas privadas (sessão, perfil, turmas do usuário, listas de inscritos)
+//     NUNCA entram em cache — hoje a autenticação por sessão É real (D-024):
+//     todas as ROTAS DE /api/** estão fora da lista (nada delas é cacheado);
 //  3) o modo offline é somente leitura: a interface bloqueia envios (js/offline.js + js/api.js);
 //  4) para publicar uma nova versão do shell: incremente VERSAO abaixo.
 
-const VERSAO = 'cepk-shell-v5';
+const VERSAO = 'cepk-shell-v6';
 
 const SHELL = [
   '/',

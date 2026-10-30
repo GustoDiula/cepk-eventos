@@ -1,62 +1,56 @@
-// Grade mensal do calendário (F-16) — dados do FRONT.
+// Grade mensal do calendário (F-16) — navegação e estado "passado" (D-021).
 //
-//Funcionalidades (D-021):
-//  • Setas ◀ ▶ navegam entre os meses com dados, limitadas ao intervalo do
-//    conjunto; botão "hoje" volta ao mês corrente.
-//  • Dias, marcas e cartões ANTES de hoje ganham estado "passado" (cinza +
-//    "Já passou") calculado na hora da abertura — vira o dia, a página muda.
-//
-// Conjuntos, escolhidos por data-calendario no HTML:
-//   "feriados" → feriados OFICIAIS do Paraná, ano 2026 completo (D-019).
-//                Fonte oficial: Governo do Paraná — Calendário Anual 2026
-//                (administracao.pr.gov.br/Pagina/Calendario-Anual) e Feriados
-//                Civis (turismo.pr.gov.br/Pagina/Feriados-Civis-e-Datas-Comemorativas).
-//   "provas"   → provas e atividades da turma 1º Ano A — datas FICTÍCIAS
-//                (RF15/RNF10).
+// Dois modos de uso:
+//  • ESTÁTICO: elemento com data-calendario="feriados" recebe os feriados
+//    OFICIAIS do Paraná, ano 2026 completo (D-019). Fontes oficiais:
+//    administracao.pr.gov.br/Pagina/Calendario-Anual e
+//    turismo.pr.gov.br/Pagina/Feriados-Civis-e-Datas-Comemorativas.
+//    Usado na página inicial.
+//  • DINÂMICO: window.CEPKCalendario.montar(alvo, eventos, legenda) — usado
+//    pela página de Turmas; os eventos vêm do SERVIDOR (sessão real, D-024),
+//    nunca de listas no navegador.
 
 (function () {
   'use strict';
 
-  const CONJUNTOS = {
-    feriados: [
-      { data: '2026-01-01', titulo: 'Confraternização Universal', tipo: 'feriado' },
-      { data: '2026-02-16', titulo: 'Carnaval (ponto facultativo)', tipo: 'facultativo' },
-      { data: '2026-02-17', titulo: 'Carnaval (ponto facultativo)', tipo: 'facultativo' },
-      { data: '2026-02-18', titulo: 'Quarta-feira de Cinzas (pf até 14h)', tipo: 'facultativo' },
-      { data: '2026-04-02', titulo: 'Ponto facultativo', tipo: 'facultativo' },
-      { data: '2026-04-03', titulo: 'Paixão de Cristo', tipo: 'feriado' },
-      { data: '2026-04-20', titulo: 'Ponto facultativo', tipo: 'facultativo' },
-      { data: '2026-04-21', titulo: 'Tiradentes', tipo: 'feriado' },
-      { data: '2026-05-01', titulo: 'Dia do Trabalho', tipo: 'feriado' },
-      { data: '2026-06-04', titulo: 'Corpus Christi (ponto facultativo)', tipo: 'facultativo' },
-      { data: '2026-06-05', titulo: 'Ponto facultativo', tipo: 'facultativo' },
-      { data: '2026-09-07', titulo: 'Independência do Brasil', tipo: 'feriado' },
-      { data: '2026-10-12', titulo: 'N. S. Aparecida', tipo: 'feriado' },
-      { data: '2026-11-02', titulo: 'Finados', tipo: 'feriado' },
-      { data: '2026-11-15', titulo: 'Proclamação da República', tipo: 'feriado' },
-      { data: '2026-11-20', titulo: 'Consciência Negra', tipo: 'feriado' },
-      { data: '2026-12-19', titulo: 'Emancipação do Paraná', tipo: 'feriadoest' },
-      { data: '2026-12-21', titulo: 'Início do recesso', tipo: 'facultativo' },
-      { data: '2026-12-25', titulo: 'Natal', tipo: 'feriado' },
-      { data: '2026-12-31', titulo: 'Fim do recesso', tipo: 'facultativo' },
-    ],
-    provas: [
-      { data: '2026-10-28', titulo: 'Prova de Matemática', tipo: 'prova' },
-      { data: '2026-11-04', titulo: 'Prova de História', tipo: 'prova' },
-      { data: '2026-11-11', titulo: 'Prova de Biologia', tipo: 'prova' },
-      { data: '2026-11-18', titulo: 'Prova de Português', tipo: 'prova' },
-      { data: '2026-11-25', titulo: 'Prova de Geografia', tipo: 'prova' },
-      { data: '2026-12-05', titulo: 'Feira de profissões', tipo: 'atividade' },
-      { data: '2026-12-08', titulo: 'Viagem pedagógica', tipo: 'atividade' },
-      { data: '2026-12-11', titulo: 'Entrega de boletim', tipo: 'atividade' },
-    ],
-  };
+  const FERIADOS = [
+    { data: '2026-01-01', titulo: 'Confraternização Universal', tipo: 'feriado' },
+    { data: '2026-02-16', titulo: 'Carnaval (ponto facultativo)', tipo: 'facultativo' },
+    { data: '2026-02-17', titulo: 'Carnaval (ponto facultativo)', tipo: 'facultativo' },
+    { data: '2026-02-18', titulo: 'Quarta-feira de Cinzas (pf até 14h)', tipo: 'facultativo' },
+    { data: '2026-04-02', titulo: 'Ponto facultativo', tipo: 'facultativo' },
+    { data: '2026-04-03', titulo: 'Paixão de Cristo', tipo: 'feriado' },
+    { data: '2026-04-20', titulo: 'Ponto facultativo', tipo: 'facultativo' },
+    { data: '2026-04-21', titulo: 'Tiradentes', tipo: 'feriado' },
+    { data: '2026-05-01', titulo: 'Dia do Trabalho', tipo: 'feriado' },
+    { data: '2026-06-04', titulo: 'Corpus Christi (ponto facultativo)', tipo: 'facultativo' },
+    { data: '2026-06-05', titulo: 'Ponto facultativo', tipo: 'facultativo' },
+    { data: '2026-09-07', titulo: 'Independência do Brasil', tipo: 'feriado' },
+    { data: '2026-10-12', titulo: 'N. S. Aparecida', tipo: 'feriado' },
+    { data: '2026-11-02', titulo: 'Finados', tipo: 'feriado' },
+    { data: '2026-11-15', titulo: 'Proclamação da República', tipo: 'feriado' },
+    { data: '2026-11-20', titulo: 'Consciência Negra', tipo: 'feriado' },
+    { data: '2026-12-19', titulo: 'Emancipação do Paraná', tipo: 'feriadoest' },
+    { data: '2026-12-21', titulo: 'Início do recesso', tipo: 'facultativo' },
+    { data: '2026-12-25', titulo: 'Natal', tipo: 'feriado' },
+    { data: '2026-12-31', titulo: 'Fim do recesso', tipo: 'facultativo' },
+  ];
 
   const ROTULOS_DIAS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
   const MESES = [
     'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
     'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
   ];
+
+  // Tipo do evento → estilo EXISTENTE da grade: prova tem estilo próprio;
+  // feira, viagem, trabalho, boletim e outro compartilham o estilo "atividade".
+  function classeDe(tipo) {
+    if (tipo === 'prova') return 'prova';
+    if (tipo === 'feriado') return 'feriado';
+    if (tipo === 'feriadoest') return 'feriadoest';
+    if (tipo === 'facultativo') return 'facultativo';
+    return 'atividade';
+  }
 
   function hoje() {
     const agora = new Date();
@@ -69,7 +63,17 @@
     return { ano: d.getFullYear(), mes: d.getMonth(), dia: d.getDate() };
   }
 
-  // conector do conjunto: intervalo de meses com dados (para limitar as setas)
+  // Aceita um evento do SERVIDOR (inicio em ISO 8601) ou já reduzido {data}.
+  function normalizar(ev) {
+    if (ev.data) return ev;
+    return {
+      data: String(ev.inicio || '').slice(0, 10), // parte da data no fuso da escola
+      titulo: ev.titulo,
+      tipo: ev.tipo,
+    };
+  }
+
+  // intervalo com dados: limita as setas ◀ ▶
   function intervaloMeses(eventos) {
     let min = null;
     let max = null;
@@ -145,9 +149,8 @@
     return barra;
   }
 
-  function construir(alvo, conjunto, ano, mes) {
+  function construir(alvo, eventos, legenda, ano, mes) {
     if (!alvo) return;
-    const eventos = CONJUNTOS[conjunto] || [];
     const limites = intervaloMeses(eventos);
     const h = new Date();
     const tituloMes = `${MESES[mes]} de ${ano}`;
@@ -160,17 +163,14 @@
       let chave = dataNorm.getFullYear() * 12 + dataNorm.getMonth();
       if (limites.min !== null && chave < limites.min) chave = limites.min;
       if (limites.max !== null && chave > limites.max) chave = limites.max;
-      construir(alvo, conjunto, Math.floor(chave / 12), chave % 12);
+      construir(alvo, eventos, legenda, Math.floor(chave / 12), chave % 12);
     }));
-
-    const passar = hoje();
 
     const tabela = document.createElement('table');
     tabela.className = 'grade-calendario';
 
     const caption = document.createElement('caption');
-    caption.textContent =
-      `${tituloMes} — ${conjunto === 'feriados' ? 'feriados oficiais do Paraná (2026)' : 'calendário da turma (fictício)'}`;
+    caption.textContent = `${tituloMes} — ${legenda}`;
     tabela.appendChild(caption);
 
     const thead = document.createElement('thead');
@@ -208,7 +208,7 @@
         td.appendChild(numero);
         for (const ev of celula.eventos) {
           const marca = document.createElement('span');
-          marca.className = `ev ev-${ev.tipo}` + (ev.passou ? ' ev-passado' : '');
+          marca.className = `ev ev-${classeDe(ev.tipo)}` + (ev.passou ? ' ev-passado' : '');
           marca.title = (ev.passou ? 'Já passou — ' : '') + ev.titulo;
           marca.textContent = (ev.passou ? '✓ ' : '') + ev.titulo;
           td.appendChild(marca);
@@ -221,8 +221,24 @@
     alvo.appendChild(tabela);
   }
 
-  // Marca cartões estáticos com data-feriado="2026-…" como "Já passou".
-  function marcarCartoesPassados() {
+  // MODO DINÂMICO: eventos vindos do servidor (sessão real).
+  window.CEPKCalendario = {
+    montar(alvo, eventosApi, legenda) {
+      if (!alvo) return;
+      const eventos = (eventosApi || []).map(normalizar);
+      const h = new Date();
+      construir(alvo, eventos, legenda || 'calendário', h.getFullYear(), h.getMonth());
+    },
+  };
+
+  // Elementos estáticos: só o conjunto de feriados (D-019).
+  document.querySelectorAll('[data-calendario="feriados"]').forEach((alvo) => {
+    const h = new Date();
+    construir(alvo, FERIADOS, 'feriados oficiais do Paraná (2026)', h.getFullYear(), h.getMonth());
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    // cartões estáticos com data-feriado="2026-…" ganham "Já passou" na data
     const passagem = hoje();
     document.querySelectorAll('[data-feriado]').forEach((cartao) => {
       const { ano, mes, dia } = quebrarData(cartao.getAttribute('data-feriado'));
@@ -235,13 +251,5 @@
         cartao.appendChild(selo);
       }
     });
-  }
-
-  // Uma instância por elemento com data-calendario (inicia no mês corrente).
-  document.querySelectorAll('[data-calendario]').forEach((alvo) => {
-    const h = new Date();
-    construir(alvo, alvo.getAttribute('data-calendario'), h.getFullYear(), h.getMonth());
   });
-
-  document.addEventListener('DOMContentLoaded', marcarCartoesPassados);
 })();

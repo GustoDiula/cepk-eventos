@@ -1,8 +1,9 @@
 # Modelo de Dados — CEPK Eventos (PostgreSQL)
 
-Status: 🟡 Proposta v1.0 — aguardando aprovação do autor. Nenhuma migração/script de
-banco foi criado; este documento descreve o desenho proposto para o `db/schema.sql`
-futuro. Baseia-se nos requisitos v1.1 e na arquitetura v2.0.
+Status: 🟢 **v1.1 — primeira versão IMPLEMENTADA** (etapas 2–5 do plano: `src/backend/db/schema.sql`
+aplicado no PostgreSQL local e testado pela suíte). As tabelas ainda sem código de uso
+(`inscricoes`, `autorizacoes`, `auditoria`) continuam **propostas** até suas etapas.
+Adições da v1.1 estão marcadas com **(D-024/D-025)**. Baseia-se nos requisitos v1.1 e na arquitetura v2.0.
 
 ## 1. Princípios do desenho
 
@@ -11,7 +12,7 @@ futuro. Baseia-se nos requisitos v1.1 e na arquitetura v2.0.
 2. **Coleta mínima de dados** (RNF10/AUD-17): o banco guarda apenas o que a operação
    exige — e-mail institucional, nome, vínculo funcional. Sem dados sensíveis.
 3. **Datas/horários sempre em `TIMESTAMPTZ`** (deslocamento de fuso embutido);
-   exibição no fuso da escola — RNF11 (recomendação ainda não aprovada).
+   a API responde no FUSO DA ESCOLA (offset `-03:00`, D-025).
 4. **Integridade no banco, sempre**: chaves estrangeiras, `CHECK`, `UNIQUE` — e as
    regras de negócio **também** novamente no backend (defesa em profundidade).
 5. Contador de vagas **transacional** (colunas dedicadas) para suportar concorrência
@@ -21,14 +22,20 @@ futuro. Baseia-se nos requisitos v1.1 e na arquitetura v2.0.
 
 ```mermaid
 erDiagram
-  usuarios ||--o{ vinculos_aluno_turma : "tem"
+  usuarios ||--o{ vinculos_aluno_turma : "tem (1 ativo)"
   turmas ||--o{ vinculos_aluno_turma : "agrupa"
+  usuarios ||--o{ vinculos_docencia : "leciona (D-025)"
+  turmas ||--o{ vinculos_docencia : "recebe"
+  disciplinas ||--o{ vinculos_docencia : "classifica"
+  usuarios ||--o{ vinculos_pedagogia : "responde por (D-025)"
+  turmas ||--o{ vinculos_pedagogia : "recebe"
   usuarios ||--o{ eventos : "cria (prof. autorizado/admin)"
   turmas |o--o{ eventos : "escopo=geral ou turma"
   eventos ||--o{ inscricoes : "recebe"
   usuarios ||--o{ inscricoes : "realiza"
   usuarios ||--o{ autorizacoes : "recebe"
   usuarios ||--o{ auditoria : "gera"
+  usuarios ||--o{ sessoes : "tem (D-024)"
 ```
 
 ## 3. Tabelas propostas (detalhamento)
@@ -38,23 +45,29 @@ erDiagram
 | Campo | Tipo | Regra | Nota |
 |---|---|---|---|
 | id | `BIGSERIAL` (PK) | — | escolha de IDs em §6 |
-| email | `CITEXT` | `UNIQUE NOT NULL` | extensão `citext` (compara sem sensibilidade a maiúsculas). Alternativa possível: `TEXT` + índice em `lower(email)` |
+| email | `TEXT` | `UNIQUE NOT NULL` | v1.1: `TEXT` (não `CITEXT`); o backend normaliza com `lower()` na consulta |
 | nome | `TEXT` | `NOT NULL` | mínimo necessário (RNF10) |
+| **papel** | `TEXT` | `NOT NULL CHECK (IN ('aluno','professor','pedagogia','direcao'))` | **(D-025)** define o ESCOPO de consulta (§ do arquivo `services/turmas-permissao.js`); autorização de publicação (RF06) continua na `autorizacoes` |
+| **senha_hash** | `TEXT NULL` | — | **(D-024)** hash bcrypt de contas LOCAIS de demonstração; `NULL` = conta que entra somente pelo provedor institucional (F-2, futuro). JAMAIS guardar a senha em texto: só o hash |
 | provedor | `TEXT NULL` | | 🔴 **Pendente F-2** (colunas do provedor exato definidas depois; não presumir) |
 | provedor_sub | `TEXT NULL` | `UNIQUE` quando preenchido | 🔴 Pendente F-2 |
 | ativo | `BOOLEAN NOT NULL DEFAULT true` | | desativa sem apagar (retenção: F-14) |
 | criado_em / atualizado_em | `TIMESTAMPTZ` | `DEFAULT now()` | |
 
-> ⚠️ Nenhuma coluna de senha (D-003). Nenhum campo sensível (RNF10).
+> ⚠️ A senha só existe como HASH (D-024), e apenas para as contas de demonstração.
+> A senha inicial de demonstração é definida no `.env` local (fora do Git) e JAMAIS
+> aparece em código, interface, documentos ou histórico. Nenhum campo sensível além disto (RNF10).
 
 ### 3.2 `turmas` — cadastro de turmas (RF01/RF13)
 
 | Campo | Tipo | Regra | Nota |
 |---|---|---|---|
 | id | `BIGSERIAL` (PK) | | |
-| nome_curto | `TEXT` | `UNIQUE NOT NULL` | dados reais do CEPK: 🔴 Pendente F-6 |
+| nome_curto | `TEXT` | `UNIQUE NOT NULL` | dados reais do CEPK: 🔴 Pendente F-6 (hoje: 10 turmas de demonstração) |
+| **tipo** | `TEXT` | `NOT NULL DEFAULT 'regular' CHECK (IN ('regular','tecnica'))` | **(D-025)** para o rótulo da interface ("curso técnico") |
 | ano_letivo | `SMALLINT` | `NOT NULL` | |
 | ativa | `BOOLEAN` | `NOT NULL DEFAULT true` | |
+| criada_em | `TIMESTAMPTZ` | `NOT NULL DEFAULT now()` | |
 
 ### 3.3 `vinculos_aluno_turma` — vínculo aluno ↔ turma (RN01; D-009)
 
@@ -70,6 +83,49 @@ erDiagram
   cada aluno tem no máximo **um** vínculo ativo por vez (evita colisões de perfil).
 - Quem cria/mantém registros aqui: 🔴 Pendente F-8 (endpoint de admin fica em `api.md`).
 
+### 3.3a `disciplinas` — catálogo de disciplinas (D-025)
+
+| Campo | Tipo | Regra | Nota |
+|---|---|---|---|
+| id | `BIGSERIAL` (PK) | | |
+| nome | `TEXT` | `NOT NULL UNIQUE` | ex.: "Geografia" (seed de demonstração) |
+
+### 3.3b `vinculos_docencia` — professor ↔ turma ↔ disciplina (D-025)
+
+| Campo | Tipo | Regra | Nota |
+|---|---|---|---|
+| usuario_id | `BIGINT` FK → `usuarios(id)` | `NOT NULL` | |
+| turma_id | `BIGINT` FK → `turmas(id)` | `NOT NULL` | |
+| disciplina_id | `BIGINT` FK → `disciplinas(id)` | `NOT NULL` | |
+| ativo | `BOOLEAN` | `NOT NULL DEFAULT true` | revogação = desativar |
+| criado_em | `TIMESTAMPTZ` | `DEFAULT now()` | |
+
+- Índice `UNIQUE (usuario_id, turma_id, disciplina_id) WHERE ativo = true`.
+- O professor vê/só administra as turmas destas linhas; o próprio professor NÃO
+  cria os seus vínculos (regra 7/8 do AGENTS; manutenção = F-8).
+- `ON DELETE CASCADE` (vínculos são estruturais; usuário/turma excluído não deixa órfão).
+
+### 3.3c `vinculos_pedagogia` — pedagogia ↳ conjunto de turmas (D-025)
+
+| Campo | Tipo | Regra | Nota |
+|---|---|---|---|
+| usuario_id | `BIGINT` FK → `usuarios(id)` | `NOT NULL` | PRIMARY KEY (usuario_id, turma_id) |
+| turma_id | `BIGINT` FK → `turmas(id)` | `NOT NULL` | |
+| ativo | `BOOLEAN` | `NOT NULL DEFAULT true` | |
+| criado_em | `TIMESTAMPTZ` | `DEFAULT now()` | |
+
+- O conjunto de turmas sob responsabilidade é definido por LINHAS aqui —
+  configurável no banco sem tocar código; nunca pelo e-mail (D-004).
+
+### 3.3d `sessoes` — sessões de login (D-024)
+
+| Tema | Detalhe |
+|---|---|
+| Gestão criada automaticamente pela biblioteca `connect-pg-simple` (colunas: sid, sess, expire) — não está em `schema.sql` |
+| Guarda SÓ o identificador da sessão + mínimo de identidade (id, nome, e-mail, papel — JAMAIS senha) |
+| Expiração: `SESSION_MAX_MINUTOS` (`.env`, altura em minutos; demo: 480 min / 8 h) |
+
+
 ### 3.4 `eventos` — gerais e por turma (RF01/RF04–RF07)
 
 | Campo | Tipo | Regra | Nota |
@@ -78,7 +134,8 @@ erDiagram
 | titulo | `TEXT` | `NOT NULL` | |
 | descricao | `TEXT` | | |
 | local | `TEXT NULL` | | RF15 |
-| inicio / fim | `TIMESTAMPTZ` | `NOT NULL; CHECK (fim > inicio)` | |
+| inicio / fim | `TIMESTAMPTZ` | `NOT NULL; CHECK (fim > inicio)` | API responde com offset `-03:00` (D-025) |
+| **tipo** | `TEXT` | `NOT NULL DEFAULT 'outro' CHECK (IN ('prova','feira','viagem','trabalho','boletim','outro'))` | **(D-025)** escolhe o estilo do cartão na grade (prova tem estilo próprio; os demais usam o de atividade) |
 | escopo | `TEXT CHECK (escopo IN ('geral','turma'))` | `NOT NULL` | RF05/RF14 |
 | turma_id | `BIGINT NULL` FK → `turmas(id) `| | exige-se `NOT NULL` quando `escopo='turma'` (ver CHECK abaixo) |
 | exige_inscricao | `BOOLEAN NOT NULL DEFAULT false` | | RF07 |
@@ -86,7 +143,7 @@ erDiagram
 | vagas_restantes | `SMALLINT NULL CHECK (vagas_restantes >= 0 AND vagas_restantes <= vagas_total)` | | idem; base da transação (§4.2) |
 | prazo_inscricao | `TIMESTAMPTZ NULL` | | requerido quando `exige_inscricao`; política do F-11 |
 | status | `TEXT CHECK (IN ('ativo','cancelado'))` | `NOT NULL DEFAULT 'ativo'` | sem cancelamento físico; 🔴 semântica pós-download: F-3 |
-| criado_por | `BIGINT` FK → `usuarios(id)` | `NOT NULL` | auditar sobre ativo (RNF12) |
+| criado_por | `BIGINT NULL` FK → `usuarios(id)` | | v1.1: implementado SEM `NOT NULL` (eventos de demonstração do seed não têm autor — quando a publicação existir, etapa 6, avaliar restabelecer `NOT NULL` RNF12) |
 | criado_em / atualizado_em | `TIMESTAMPTZ` | `DEFAULT now()` | |
 
 **CHECKs de coerência (propostas):**
@@ -192,6 +249,9 @@ membros vínculados (mais professores autorizados/admin). A elegibilidade de ins
 
 - Campos de usuário: apenas e-mail + nome — posturas de dados sensíveis manter
   proibidas pela natureza do esquema.
+- **`senha_hash` (D-024):** só hash bcrypt no banco; a senha inicial de demonstração
+  vive apenas no `.env` local (fora do Git); nunca circula na interface.
+- A sessão (`sessoes`) guarda o mínimo de identidade — nunca senha.
 - Listas de inscritos (ver `api.md`) exibem nome **apenas para professores
   autorizados/admin** — nunca em respostas de qualquer perfil.
 - Retenção de dados de quem saiu da escola: 🔴 Pendente F-14 (desativar é o
@@ -207,6 +267,11 @@ membros vínculados (mais professores autorizados/admin). A elegibilidade de ins
 | 3 | `inscricoes.estado` com 'cancelada' | sem estado (DELETE físico) | preserva histórico (F-5 decide se há cancelamento) |
 | 4 | Prazo e vagas sempre obrigatórios quando `exige_inscricao` | permitir vaga infinita | RN02 diz "define prazo e limite de vagas" |
 | 5 | FK `ON DELETE RESTRICT` nas relações | CASCADE | evita apagões em cadeia na base da escola |
+
+> **v1.1:** no código implementado, e-mails viram `TEXT` com normalização `lower()`
+> no backend (item 2 acima segue aberto à sua revisão). As FKs de vínculos/usuário
+> das novas tabelas usam `ON DELETE CASCADE` (item 5 aplicado apenas a vínculos
+> estruturais); as regras originais valem para eventos/inscrições quando existirem.
 
 ## 7. Pendências que o modelo herda (marcadas, não presumidas)
 
@@ -227,3 +292,4 @@ membros vínculados (mais professores autorizados/admin). A elegibilidade de ins
 | Versão | Data | Descrição |
 |---|---|---|
 | 1.0 | 2026-10-28 | Proposta de modelo: 7 tabelas, CHECKs de coerência, estratégia transacional para vagas, índices parciais de unicidade; pendências marcadas |
+| 1.1 | 2026-10-29 | Primeira versão IMPLEMENTADA (etapas 2–5): `papel` + `senha_hash` em `usuarios` (D-024), `tipo` em `turmas`/`eventos`, novas tabelas `disciplinas`, `vinculos_docencia`, `vinculos_pedagogia` (D-025) e `sessoes` (connect-pg-simple); seed de demonstração idempotente (confere antes de inserir); `criado_por` sem `NOT NULL` por enquanto; `inscricoes/autorizacoes/auditoria` continuam propostas |

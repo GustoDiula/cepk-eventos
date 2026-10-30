@@ -170,12 +170,22 @@ Entidades previstas (nomes/tipos exatos só no plano de desenvolvimento):
 | `inscricoes` | uma por aluno por evento | RN07; cancelamento = F-5 |
 | `registro_auditoria` | quem/ quando publicou, editou, cancelou, inscreveu | RNF12 |
 
-### 5A. Perfis de acesso e permissões (D-023 — proposta aguardando banco e login real)
+### 5A. Perfis de acesso e permissões (D-023/D-025 — ✅ IMPLEMENTADOS: banco + backend, etapas 2–5)
 
 Pedido do autor (28/10/2026, itens 5 e 6): a página **Turmas** deve apresentar
 conteúdo diferente por perfil. Isso exige back-end: sem banco (etapa 2) e sem login
 real (etapa 4) NÃO há como diferenciar de verdade — nada disto pode ser maquete
 fictícia ("não invente vínculos nem usuários administrativos fictícios").
+
+**Como foi implementado (D-025) — nomes reais do código:**
+
+| Proposta anterior | Implementação real (schema.sql) |
+|---|---|
+| `vinculos_aluno_turma` (já existia no desenho) | idem — 1 vínculo ativo por aluno |
+| `vinculos_professor_turma` (proposta) | `vinculos_docencia` (professor ↔ turma ↔ `disciplinas`) |
+| `vinculos_pedagogo_turmas` (proposta) | `vinculos_pedagogia` (conjunto de turmas por linha) |
+| `direcao_escolar` (tabela proposta) | **não precisou de tabela**: `usuarios.papel = 'direcao'` → todas as turmas ativas (`services/turmas-permissao.js`) |
+| `papeis` por vínculo | `usuarios.papel`: `aluno` · `professor` · `pedagogia` · `direcao` (CHECK no banco) |
 
 **Vínculos necessários no banco (extensão do esboço acima):**
 
@@ -199,7 +209,10 @@ fictícia ("não invente vínculos nem usuários administrativos fictícios").
 **Na interface (depois que a sessão real existir):** a página Turmas recebe do
 servidor o próprio conjunto de turmas do usuário — o frontend só RENDERIZA o que
 o backend autorizou (nunca decide por conta própria). Ação administrativa aparece
-apenas para quem tem permissão real.
+apenas para quem tem permissão real. **✅ Vigente desde 2026-10-29:** a página
+Turmas (`turma.html`) consulta `GET /api/v1/turmas`, que devolve o conjunto por
+vínculo; turma fora do conjunto responde 404 (CA-03); os 5 perfis de demonstração
+contam com contas `.test` + vínculos registrados no banco (D-024/D-025).
 
 ## 6. Configuração dos ambientes
 

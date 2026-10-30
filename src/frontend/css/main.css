@@ -252,6 +252,11 @@ main.container h2:first-child {
 .cartao-turma:focus-visible {
   border-color: var(--cor-acento);
 }
+/* Turma escolhida (página de turmas, sessão real) */
+.cartao-turma.selecionado {
+  border-color: var(--cor-acento);
+  box-shadow: 0 0 0 2px var(--cor-acento);
+}
 @media (min-width: 768px) {
   .grade-turmas { grid-template-columns: repeat(3, 1fr); }
 }
@@ -532,7 +537,7 @@ button:focus-visible {
 }
 
 /* ------------------------------------------------------------
-   Sessão de demonstração (D-018) — sidebar e faixa no celular
+   Sessão de usuário (sessão real de servidor, D-024) — sidebar e faixa
    ------------------------------------------------------------ */
 .area-sessao {
   display: flex;
@@ -563,7 +568,7 @@ button:focus-visible {
 .lateral .entrar {
   display: block;
 }
-/* Esconde o link estático "Entrar" da sidebar quando a sessão demo é renderizada */
+/* Esconde o link estático "Entrar" da sidebar quando a sessão é renderizada */
 .area-sessao:has(.sair-demo) ~ * { }
 
 /* Faixa de sessão demo no celular (navegação inferior esconde a sidebar) */
@@ -585,11 +590,11 @@ button:focus-visible {
 .faixa-sessao .sair-demo {
   padding: 0.25rem 0.6rem;
 }
-html.com-sessao-demo .faixa-sessao {
+html.com-sessao .faixa-sessao {
   display: flex;
 }
 @media (min-width: 768px) {
-  html.com-sessao-demo .faixa-sessao { display: none; }
+  html.com-sessao .faixa-sessao { display: none; }
 }
 
 /* ------------------------------------------------------------
@@ -707,4 +712,19 @@ html.com-sessao-demo .faixa-sessao {
 .form-login input:focus-visible {
   outline: 2px solid var(--cor-acento);
   outline-offset: 1px;
+}
+
+/* ------------------------------------------------------------
+   Login real (D-024) � contas de demonstra��o listadas na p�gina
+   ------------------------------------------------------------ */
+.lista-contas-demo {
+  line-height: 1.8;
+  padding-left: 1.2rem;
+}
+.lista-contas-demo code {
+  background: var(--cor-primaria-clara);
+  color: #fff;
+  border-radius: 6px;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.85rem;
 }

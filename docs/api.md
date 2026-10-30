@@ -1,8 +1,9 @@
 # Especificação da API — CEPK Eventos
 
-Status: 🟡 Proposta v1.0 — aguardando aprovação do autor. Nenhum endpoint foi
-implementado; nenhum servidor/rota criado. Este documento descreve o contrato HTTP
-proposto para o backend Express (arquitetura v2.0, cap. 3).
+Status: 🟢 **v1.1 — parte IMPLEMENTADA** (etapas 1, 4 e 5 do plano) + contrato
+proposto para o que falta. O implementado está listado no §3.0 com exatidão;
+endpoints das etapas 6–8 (eventos/inscrições) e administrativos (§3.5) continuam
+🟡 propostos. Baseia-se na arquitetura v2.0.
 
 ## 1. Convenções gerais
 
@@ -30,16 +31,41 @@ Códigos HTTP utilizados: `200 OK`, `201 Created`, `204 No Content`, `400 → 49
 | `SEM_VAGAS` | 409 — `vagas_restantes = 0` (RN06) |
 | `INSCRICAO_DUPLICADA` | 409 — UNIQUE (RN07/CA-05) |
 | `DADOS_INVALIDOS` | 400 — campos inválidos/ausentes |
+| `MUITAS_TENTATIVAS` | 429 — limite de tentativas de login: 5 falhas em 15 min por IP+e-mail (✅ implementado) |
+| `ORIGEM_REJEITADA` | 403 — cabeçalho `Origin` não corresponde ao `Host` (POSTs de autenticação; ✅ implementado) |
 | `CONEXAO_EXIGIDA` | — caso de interface, não de API (RF17: sem conexão a PWA nem envia) |
 
 ## 2. Papéis usados nas tabelas abaixo
 
-`visitante` (sem sessão — comportamento 🔴 pendente F-1), `aluno`,
-`professor_autorizado`, `admin`.
+`visitante` (sem sessão), `aluno`, `professor`, `pedagogia`, `direcao` — valores
+reais em `usuarios.papel` (D-025). A AUTORIZAÇÃO de publicar/eventos administrativos
+continua separada na `autorizacoes` (`professor_autorizado`/`admin`, RF06; etapa 6/F-7/F-13).
 
 ## 3. Endpoints propostos
 
-### 3.1 Autenticação 🔴 dependente de F-2 (provedor)
+## 3.0 ✅ IMPLEMENTADOS (etapas 1/4/5 — contrato real do código)
+
+| Método | Rota | Autenticação | Finalidade | Entrada | Saída (200) | Erros |
+|---|---|---|---|---|---|---|
+| GET | `/api/v1/health` | — | estado do serviço e do banco | — | `{ok, ambiente, banco: "ok"\|"indisponivel"\|"nao-configurado"}` | — |
+| POST | `/api/v1/auth/entrar` | visitante | login REAL local de demonstração (D-024): valida e-mail/senha no banco (hash bcrypt), cria sessão no PG e responde o usuário | `{email, senha}` | `{usuario: {nome, email, papel}}` + cookie de sessão httpOnly | 401 `CREDENCIAIS_INVALIDAS` **com mensagem única** (e-mail inexistente, senha errada e campos inválidos devolvem EXATAMENTE a mesma resposta — anti-enumeração; há hash "isca" para igualar o tempo dos caminhos); 429 `MUITAS_TENTATIVAS` (5 falhas em 15 min por IP+e-mail); 403 `ORIGEM_REJEITADA` |
+| POST | `/api/v1/auth/sair` | qualquer | destrói a sessão no servidor (logout real) | — | 204, cookie invalidado | — |
+| GET | `/api/v1/auth/me` | sessão válida | usuário da sessão — FONTE de EXIBIÇÃO, nunca de decisão de permissão (regra 8) | — | `{usuario: {id, nome, email, papel}}` | 401 `SESSAO_INVALIDA` |
+| GET | `/api/v1/turmas` | sessão válida | orienta a página Turmas: lista do PRÓPRIO vínculo (D-025) — aluno: própria(s) · professor: turmas de docência · pedagogia: conjunto sob responsabilidade · direção: todas as ativas | — | `{turmas: [{id, nome_curto, tipo, ano_letivo}]}` | 401 |
+| GET | `/api/v1/turmas/:id` | sessão válida | detalhe de uma turma acessível | — | `{turma}` | 401; **404 `NAO_ENCONTRADO`** para turma fora do conjunto (CA-03/D-009: não revela existência) |
+| GET | `/api/v1/turmas/:id/eventos` | sessão válida | eventos ATIVOS da turma em ordem cronológica (RF04/RF16) | — | `{eventos: [{id, titulo, descricao, local, inicio, fim, tipo, escopo, exige_inscricao, vagas_total, vagas_restantes, prazo_inscricao, status}]}` | 401; 404 idem acima |
+
+**Detalhe importante de datas (D-025):** `inicio/fim/prazo_inscricao` saem em ISO 8601
+**com o offset do fuso da escola** (`America/Sao_Paulo`, `-03:00` fixo — o Brasil não
+usa horário de verão desde 2019; se voltar, revisar). O frontend deve FATIAR a string
+(`slice`) para dia/hora — jamais reconvertê-la com `new Date(...).toLocaleString()`,
+que mudaria o horário conforme o fuso de quem acessa.
+
+**Privacidade nas respostas:** nenhuma rota devolve e-mails de terceiros; a lista de
+turmas só contém dados públicos de turma. Contas de demonstração existem e-mail
+`.test` + papel; a senha inicial existe APENAS no `.env` (nunca na API).
+
+### 3.1 Autenticação institucional 🔴 dependente de F-2 (provedor) — proposta futura
 
 > Nada aqui é implementado até F-2 confirmar o provedor. As formas abaixo são o
 > padrão OAuth básico comum — **não uma decisão de provedor**.
@@ -51,7 +77,7 @@ Códigos HTTP utilizados: `200 OK`, `201 Created`, `204 No Content`, `400 → 49
 | POST | `/api/v1/auth/logout` | qualquer autenticado | encerra sessão (RNF09/CA-09), cookie invalidado | 204 |
 | GET | `/api/v1/auth/me` | autenticado | devolve perfil/papéis para a interface (jamais fonte de decisão) | 401 |
 
-### 3.2 Turmas
+### 3.2 Turmas (proposta original — o implementado é o §3.0)
 
 | Método | Rota | Autenticação | Permissão | Finalidade | Entrada | Saída | Erros |
 |---|---|---|---|---|---|---|---|
@@ -129,3 +155,4 @@ Códigos HTTP utilizados: `200 OK`, `201 Created`, `204 No Content`, `400 → 49
 | Versão | Data | Descrição |
 |---|---|---|
 | 1.0 | 2026-10-28 | Proposta do contrato HTTP: convenções, erros nomeados, 15 endpoints em 5 domínios, regras transversais de inscrição e política de dados. Nenhum endpoint implementado |
+| 1.1 | 2026-10-29 | §3.0 documentando o JÁ IMPLEMENTADO: health + auth local demo (`/entrar` com mensagem única/anti-enumeração, hash "isca", 429 rate limit, Origem conferida; `/sair` 204; `/me`) e turmas por vínculo (`/turmas`, `/:id`, `/:id/eventos`) com datas no fuso da escola (`-03:00`, D-025) e 404 de isolamento (CA-03); erros nomeados `MUITAS_TENTATIVAS`/`ORIGEM_REJEITADA` acrescentados. O resto do contrato permanece proposto |

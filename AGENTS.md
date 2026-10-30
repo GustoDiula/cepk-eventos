@@ -59,38 +59,51 @@ cepk-eventos/
 ├── AGENTS.md                      ← este arquivo
 ├── package.json / package-lock.json
 ├── .env.example                   ← modelo de variáveis (NUNCA o .env real)
-├── .gitignore
+├── .gitignore                     ← mantém o .env LOCAL fora do Git
 ├── scripts/
-│   └── gerar-icones.ps1           ← gera os ícones do PWA
+│   ├── gerar-icones.ps1           ← gera os ícones do PWA
+│   ├── pgsql-start.ps1            ← inicia o PostgreSQL portátil local (D-011)
+│   └── pgsql-stop.ps1             ← para o PostgreSQL portátil
 ├── docs/
 │   ├── requisitos.md              ← requisitos funcionais/não funcionais e regras de negócio
-│   ├── arquitetura.md             ← arquitetura (v2.0) + §5A perfis e permissões
-│   ├── decisoes.md                ← registro de decisões (D-001..D-023)
-│   ├── modelo-de-dados.md / api.md / pwa.md / plano-de-desenvolvimento.md
+│   ├── arquitetura.md             ← arquitetura (v2.0) + §5A perfis e permissões (implementados)
+│   ├── decisoes.md                ← registro de decisões (D-001..D-025)
+│   ├── modelo-de-dados.md         ← v1.1 (IMPLEMENTADA, etapas 2–5)
+│   ├── api.md                     ← v1.1: §3.0 endpoints reais + contrato futuro (etapas 6–9)
+│   └── pwa.md / plano-de-desenvolvimento.md
 ├── src/
 │   ├── backend/
-│   │   ├── app.js                 ← Express: rotas estáticas + health + SW-Allowed
-│   │   ├── server.js · config/env.js
-│   │   ├── routes/health.routes.js · middlewares/errorHandler.js
-│   │   └── controllers/ · db/ · services/   (vazios: etapas 2–7 pendentes)
+│   │   ├── app.js                 ← Express: sessão no PG (D-024) + estáticos + 401/404 de API
+│   │   ├── server.js · config/ (env.js · session.js)
+│   │   ├── db/ (pool.js · schema.sql · seed-demo.js ← semente de demonstração IDEMPOTENTE)
+│   │   ├── middlewares/ (authenticate.js · limitarTentativasLogin.js · errorHandler.js)
+│   │   ├── routes/ (health.routes.js · auth.routes.js · turmas.routes.js)
+│   │   ├── services/turmas-permissao.js  ← vínculos do BANCO decidem o acesso (D-004/D-025)
+│   │   └── controllers/ (vazio: etapas 6–7 pendentes)
 │   └── frontend/
 │       ├── pages/
-│       │   ├── index.html         ← Início: feriados oficiais do PR 2026 + grade geral
-│       │   ├── turma.html         ← Turmas: calendário e atividades da turma (única)
-│       │   ├── inscricoes.html · evento.html
-│       │   ├── login.html         ← login de demonstração (D-018)
+│       │   ├── index.html         ← Início: feriados oficiais do PR 2026
+│       │   ├── turma.html         ← Turmas: grade por vínculo + calendário/lista via API
+│       │   ├── inscricoes.html · evento.html   (protótipos: etapas 6–7)
+│       │   ├── login.html         ← login REAL de demonstração (D-024; D-018 em desuso)
 │       │   └── sobre.html
 │       ├── css/main.css
-│       ├── js/ (api.js · calendario.js · offline.js · sessao.js)
-│       └── pwa/ (manifest.webmanifest · service-worker.js · icons/ 192·512·maskable)
+│       ├── js/ (api.js · calendario.js · offline.js · sessao.js ← consulta /auth/me)
+│       └── pwa/ (manifest.webmanifest · service-worker.js cepk-shell-v6 · icons/ 192·512·maskable)
 └── tests/
     ├── unit/ (backend.health · pwa.manifest)
-    ├── integration/frontend.http.test.mjs
+    ├── integration/ (frontend.http.test.mjs · auth.db.test.mjs ← 8 grupos de teste do autor)
     └── e2e/ (roteiro.frontend.md · roteiro.pwa.md) · *.gitkeep
 ```
 
 > Atualização 2026-10-28 (pedido do autor): a página `calendario.html` foi excluída
 > (conteúdo fundido em `turma.html` — D-022). Seção mantida por este arquivo.
+
+> Atualização 2026-10-29: etapas 0–5 do plano executadas. O `.env` LOCAL guarda
+> `SENHA_DEMO` (senha inicial das contas de demonstração) e as credenciais do
+> PostgreSQL — vivem APENAS ali (fora do Git), nunca em código, interface ou docs.
+> Banco de demonstração: 5 contas `.test` com vínculos registrados
+> (2 alunos · prof. Geografia em 3 turmas · pedagogia/direção em todas as 10).
 
 > Atualize esta seção sempre que a estrutura do repositório mudar
 > (explique a alteração ao autor antes, conforme a regra 2).

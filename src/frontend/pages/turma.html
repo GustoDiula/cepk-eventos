@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Turma 1º Ano A — CEPK Eventos</title>
+  <title>Turmas — CEPK Eventos</title>
   <link rel="stylesheet" href="/css/main.css">
   <link rel="manifest" href="/pwa/manifest.webmanifest">
 </head>
@@ -20,64 +20,21 @@
   </aside>
 
   <main class="container">
-    <h2>Turma 1º Ano A <small>(dados de demonstração)</small></h2>
-    <p class="aviso">Datas FICTÍCIAS só para mostrar o layout — o calendário real
-       virá do sistema da escola, e você verá apenas a sua turma (o servidor
-       verificará a qual turma cada aluno pertence).</p>
+    <h2>Minhas turmas</h2>
+    <p class="aviso" hidden id="avisoStatus" role="status"></p>
 
-    <section data-calendario="provas" aria-label="Calendário da turma (mês corrente)"></section>
-
-    <h3>Provas e atividades da turma <small>(fictícias)</small></h3>
-    <ul class="lista-eventos">
-      <li class="cartao-evento">
-        <h3>Prova de Matemática (fictícia)</h3>
-        <span class="meta">28/10/2026, 08:00 — Sala 12 (fictício)</span>
-        <span class="selo selo--prova">Prova</span>
-      </li>
-      <li class="cartao-evento">
-        <h3>Prova de História (fictícia)</h3>
-        <span class="meta">04/11/2026, 08:00 — Sala 12 (fictício)</span>
-        <span class="selo selo--prova">Prova</span>
-      </li>
-      <li class="cartao-evento">
-        <h3>Prova de Biologia (fictícia)</h3>
-        <span class="meta">11/11/2026, 08:00 — Sala 12 (fictício)</span>
-        <span class="selo selo--prova">Prova</span>
-      </li>
-      <li class="cartao-evento">
-        <h3>Prova de Português (fictícia)</h3>
-        <span class="meta">18/11/2026, 08:00 — Sala 12 (fictício)</span>
-        <span class="selo selo--prova">Prova</span>
-      </li>
-      <li class="cartao-evento">
-        <h3>Prova de Geografia (fictícia)</h3>
-        <span class="meta">25/11/2026, 08:00 — Sala 12 (fictício)</span>
-        <span class="selo selo--prova">Prova</span>
-      </li>
-      <li class="cartao-evento">
-        <h3>Feira de profissões (fictícia)</h3>
-        <span class="meta">05/12/2026, 09:00 — Ginásio (fictício)</span>
-        <span class="selo selo--atividade">Feira</span>
-      </li>
-      <li class="cartao-evento">
-        <h3>Viagem pedagógica (fictícia)</h3>
-        <span class="meta">08/12/2026, 07:30 — saída da escola (fictício)</span>
-        <span class="meta">Exige inscrição: 30/45 vagas — prazo 30/11/2026 (fictício)</span>
-        <span class="selo selo--atividade">Viagem pedagógica</span>
-        <span class="selo selo--exige">Exige inscrição</span>
-        <a href="/evento.html">Ver detalhe</a>
-      </li>
-      <li class="cartao-evento">
-        <h3>Entrega de boletim (fictícia)</h3>
-        <span class="meta">11/12/2026, 19:00 — Sala 12 (fictício)</span>
-        <span class="selo selo--atividade">Boletim</span>
-      </li>
+    <ul class="grade-turmas" id="raizTurmas" aria-label="Turmas acessíveis à sua conta">
+      <!-- preenchido pelo servidor: a lista que chega DEPENDE do vínculo
+           da sua conta confirmado por ele (aluno/professor/pedagogia/direção) -->
     </ul>
 
-    <div class="legenda" aria-label="Legenda">
-      <span><i class="ponto ponto--prova"></i>Prova</span>
-      <span><i class="ponto ponto--atividade"></i>Feira / viagem / boletim</span>
-    </div>
+    <section id="painelTurma" hidden>
+      <h3 id="tituloTurma">Escolha uma turma</h3>
+      <section data-calendario="dinamico" id="raizCalendario" aria-label="Calendário da turma escolhida"></section>
+
+      <h3>Provas e atividades da turma <small>(dados de demonstração)</small></h3>
+      <ul class="lista-eventos" id="listaEventos"></ul>
+    </section>
 
     <a class="voltar" href="/">← Voltar ao início</a>
   </main>
@@ -89,10 +46,178 @@
     <a href="/sobre.html"><strong>ℹ</strong>Sobre</a>
   </nav>
 
-  <div class="faixa-sessao" id="faixaSessao"><span>Sessão de demonstração</span></div>
+  <div class="faixa-sessao" id="faixaSessao"><span>Sessão</span></div>
 
-  <footer class="rodape">CEPK Eventos — protótipo visual (redesign 2026-10-28).</footer>
+  <footer class="rodape">CEPK Eventos — protótipo (redesign 2026-10-28).</footer>
 
+  <script>
+    (function () {
+      'use strict';
+
+      var ROTULO_TIPO = {
+        prova: 'Prova', feira: 'Feira', viagem: 'Viagem',
+        trabalho: 'Trabalho', boletim: 'Boletim', outro: 'Atividade',
+      };
+
+      var elAviso = document.getElementById('avisoStatus');
+      var elGrade = document.getElementById('raizTurmas');
+      var elPainel = document.getElementById('painelTurma');
+      var elTituloTurma = document.getElementById('tituloTurma');
+      var elCalendario = document.getElementById('raizCalendario');
+      var elLista = document.getElementById('listaEventos');
+      var selecionada = null;
+
+      function avisar(texto) {
+        elAviso.textContent = texto;
+        elAviso.hidden = !texto;
+      }
+
+      // Toda leitura de dados passa pelo servidor; sessão inexistente → login
+      async function pedir(rota) {
+        var resposta = await fetch(rota, { credentials: 'same-origin' });
+        if (resposta.status === 401) {
+          location.href = '/login.html';
+          throw new Error('sem-sessao');
+        }
+        if (!resposta.ok) throw new Error('HTTP ' + resposta.status);
+        return resposta.json();
+      }
+
+      function dataCurta(iso) {
+        return String(iso).slice(8, 10) + '/' + String(iso).slice(5, 7) + '/' + String(iso).slice(0, 4);
+      }
+      function horaCurta(iso) { return String(iso).slice(11, 16); }
+
+      function cartaoEvento(ev) {
+        var li = document.createElement('li');
+        li.className = 'cartao-evento';
+
+        var titulo = document.createElement('h3');
+        titulo.textContent = ev.titulo;
+        li.appendChild(titulo);
+
+        var meta = document.createElement('span');
+        meta.className = 'meta';
+        var mesmoDia = String(ev.inicio).slice(0, 10) === String(ev.fim).slice(0, 10);
+        meta.textContent = mesmoDia
+          ? dataCurta(ev.inicio) + ', ' + horaCurta(ev.inicio) + '–' + horaCurta(ev.fim) +
+            (ev.local ? ' — ' + ev.local : '')
+          : dataCurta(ev.inicio) + ' a ' + dataCurta(ev.fim) + (ev.local ? ' — ' + ev.local : '');
+        li.appendChild(meta);
+
+        if (ev.exige_inscricao) {
+          var metaInscricao = document.createElement('span');
+          metaInscricao.className = 'meta';
+          metaInscricao.textContent = 'Exige inscrição: ' + Number(ev.vagas_restantes) +
+            ' de ' + Number(ev.vagas_total) + ' vagas — prazo ' + dataCurta(ev.prazo_inscricao);
+          li.appendChild(metaInscricao);
+
+          var seloInscricao = document.createElement('span');
+          seloInscricao.className = 'selo selo--exige';
+          seloInscricao.textContent = 'Exige inscrição';
+          li.appendChild(seloInscricao);
+        }
+
+        var selo = document.createElement('span');
+        selo.className = 'selo ' + (ev.tipo === 'prova' ? 'selo--prova' : 'selo--atividade');
+        selo.textContent = ROTULO_TIPO[ev.tipo] || 'Atividade';
+        li.appendChild(selo);
+        return li;
+      }
+
+      async function abrirTurma(indice) {
+        var turma = estadoDe(indice);
+        if (!turma) return;
+        selecionada = indice;
+        elPainel.hidden = false;
+        elTituloTurma.textContent = 'Turma ' + turma.nome_curto;
+        elCalendario.replaceChildren();
+        elLista.replaceChildren();
+        avisar('Carregando dados da turma…');
+        try {
+          var dados = await pedir('/api/v1/turmas/' + turma.id + '/eventos');
+          var eventos = dados.eventos || [];
+          avisar('');
+          window.CEPKCalendario.montar(
+            elCalendario, eventos, 'turma ' + turma.nome_curto + ' (demonstração)'
+          );
+          if (eventos.length === 0) {
+            var vazio = document.createElement('li');
+            vazio.className = 'cartao-evento';
+            vazio.textContent = 'Nenhuma atividade cadastrada para esta turma ainda.';
+            elLista.appendChild(vazio);
+          } else {
+            eventos.forEach(function (ev) { elLista.appendChild(cartaoEvento(ev)); });
+          }
+        } catch (erro) {
+          if (erro.message === 'sem-sessao') return; // redirecionamento em andamento
+          avisar('Não foi possível carregar os dados desta turma (sem conexão?).');
+        }
+      }
+
+      function estadoDe(indice) {
+        return listaTurmas[indice] || null;
+      }
+
+      var listaTurmas = [];
+
+      function montarGrade() {
+        elGrade.replaceChildren();
+        listaTurmas.forEach(function (turma, indice) {
+          var item = document.createElement('li');
+          item.className = 'cartao-turma';
+          item.setAttribute('role', 'button');
+          item.tabIndex = 0;
+          item.textContent = turma.nome_curto;
+          var sub = document.createElement('small');
+          sub.textContent = turma.tipo === 'tecnica' ? 'curso técnico' : 'turma regular';
+          item.appendChild(sub);
+          item.addEventListener('click', function () {
+            elGrade.querySelectorAll('.cartao-turma').forEach(function (cartao) {
+              cartao.classList.remove('selecionado');
+            });
+            item.classList.add('selecionado');
+            abrirTurma(indice);
+          });
+          item.addEventListener('keydown', function (tecla) {
+            if (tecla.key === 'Enter' || tecla.key === ' ') {
+              tecla.preventDefault();
+              item.click();
+            }
+          });
+          elGrade.appendChild(item);
+        });
+      }
+
+      (async function iniciar() {
+        avisar('Carregando turmas…');
+        try {
+          var dados = await pedir('/api/v1/turmas');
+          listaTurmas = dados.turmas || [];
+          avisar('');
+          if (listaTurmas.length === 0) {
+            avisar('Nenhuma turma vinculada à sua conta ainda. Fale com a secretaria.');
+            return;
+          }
+          montarGrade();
+          if (listaTurmas.length === 1) {
+            // único vínculo (p. ex. aluno): direciona automaticamente
+            abrirTurma(0);
+          } else {
+            elPainel.hidden = false;
+            elTituloTurma.textContent = 'Escolha uma turma';
+            var dica = document.createElement('li');
+            dica.className = 'cartao-evento';
+            dica.textContent = 'Clique em uma turma acima para ver o calendário e as atividades.';
+            elLista.appendChild(dica);
+          }
+        } catch (erro) {
+          if (erro.message === 'sem-sessao') return;
+          avisar('Não foi possível carregar as turmas (sem conexão?).');
+        }
+      })();
+    })();
+  </script>
   <script defer src="/js/calendario.js"></script>
   <script defer src="/js/sessao.js"></script>
   <script defer src="/js/offline.js"></script>
