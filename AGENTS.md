@@ -60,6 +60,8 @@ cepk-eventos/
 ├── package.json / package-lock.json
 ├── .env.example                   ← modelo de variáveis (NUNCA o .env real)
 ├── .gitignore                     ← mantém o .env LOCAL fora do Git
+├── backup/
+│   └── cepk-eventos-backup-2026-10-29.zip  ← backup do projeto (zip: código + histórico .git; sem .env e sem node_modules)
 ├── scripts/
 │   ├── gerar-icones.ps1           ← gera os ícones do PWA
 │   ├── pgsql-start.ps1            ← inicia o PostgreSQL portátil local (D-011)
