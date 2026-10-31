@@ -1,4 +1,19 @@
-# Simple workflow for deploying static content to GitHub Pages
+# Publica a DEMONSTRAÇÃO ESTÁTICA (pasta demo/) no GitHub Pages — D-026.
+#
+# Base: gabarito "Deploy static content to Pages" criado pela tela do
+# GitHub (30/10) — a ÚNICA forma que executou o deploy com sucesso aqui.
+# Mudanças feitas sobre o gabarito:
+#   • publica a PASTA demo/ (o gabarito publicava a raiz do repositório,
+#     que não tem index.html — motivo do 404 visto em 31/10);
+#   • regenera a demo a partir do seed-demo.js antes (fonte única;
+#     falha aqui significa que demo/ estava com dado velho).
+# Publisher ÚNICO: o deploy-demo.yml foi aposentado (2 tentativas falharam
+# sem criar job algum — sem log para diagnosticar).
+#
+# O produto real NÃO sai daqui: páginas estáticas não executam Node.js
+# (Express) nem PostgreSQL. As páginas REAIS continuam exigindo o
+# servidor local.
+
 name: Deploy static content to Pages
 
 on:
@@ -9,14 +24,14 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+# Allow only one concurrent deployment, skipping runs queued between the run
+# in-progress and latest queued. Do NOT cancel in-progress runs: incomplete
+# deployments are not overwritten.
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -31,13 +46,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias e regenerar a demo (fonte unica)
+        run: npm ci && npm run demo:gerar
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: '.'
+          # Publicar SOMENTE a pasta demo/ (a vitrine sem servidor)
+          path: demo
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5

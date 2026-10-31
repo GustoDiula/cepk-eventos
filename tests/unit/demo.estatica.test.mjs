@@ -185,9 +185,15 @@ test('publicação: workflow do Pages e npm script demo:gerar existem', () => {
   const pkg = JSON.parse(fs.readFileSync(path.join(raiz, 'package.json'), 'utf8'));
   assert.equal(typeof pkg.scripts['demo:gerar'], 'string', 'npm script demo:gerar ausente');
 
-  const workflow = fs.readFileSync(path.join(raiz, '.github', 'workflows', 'deploy-demo.yml'), 'utf8');
-  assert.match(workflow, /deploy-pages@v4/u, 'deploy do Pages ausente');
+  // Publisher ÚNICO: static.yml (gabarito da GitHub que executou com sucesso).
+  // deploy-demo.yml foi aposentado (2 tentativas falharam sem criar job algum).
+  const workflow = fs.readFileSync(path.join(raiz, '.github', 'workflows', 'static.yml'), 'utf8');
+  assert.match(workflow, /deploy-pages@v5/u, 'deploy do Pages ausente');
   assert.match(workflow, /path: demo/u, 'artifact precisa publicar a PASTA demo/');
+  assert.doesNotMatch(workflow, /path:\s*['"]?\.\s*$/u, 'workflow NÃO pode publicar a raiz (404)');
   assert.match(workflow, /github-pages/u, 'environment do Pages ausente');
   assert.match(workflow, /demo:gerar/u, 'workflow precisa regenerar a demo');
+
+  assert.throws(() => fs.readFileSync(path.join(raiz, '.github', 'workflows', 'deploy-demo.yml')),
+    'deploy-demo.yml aposentado ainda existe no repo');
 });

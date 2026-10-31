@@ -60,7 +60,7 @@ cepk-eventos/
 ├── package.json / package-lock.json
 ├── .env.example                   ← modelo de variáveis (NUNCA o .env real)
 ├── .gitignore                     ← mantém o .env LOCAL fora do Git
-├── .github/workflows/deploy-demo.yml  ← publica demo/ no GitHub Pages a cada push (D-026)
+├── .github/workflows/static.yml   ← publicador ÚNICO do Pages: instala deps, `npm run demo:gerar` e publica a pasta demo/ a cada push (D-026)
 ├── backup/
 │   └── cepk-eventos-backup-2026-10-29.zip  ← backup do projeto (zip: código + histórico .git; sem .env e sem node_modules)
 ├── demo/                          ← DEMONSTRAÇÃO ESTÁTICA para o GitHub Pages (D-026) — produto real INTACTO
