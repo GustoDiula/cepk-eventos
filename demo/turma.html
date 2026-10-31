@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Turmas (demo) — CEPK Eventos</title>
+  <link rel="stylesheet" href="./main.css">
+</head>
+<body>
+  <div class="aviso-demo" role="note">
+    DEMONSTRAÇÃO — versão estática sem servidor: nada é enviado e as
+    inscrições ficam DESABILITADAS.
+  </div>
+
+  <aside class="lateral" aria-label="Navegação principal">
+    <a class="marca" href="./index.html">CEPK Eventos<small>Colégio Estadual Presidente Kennedy</small></a>
+    <nav>
+      <a href="./index.html">Início</a>
+      <a href="./turma.html" aria-current="page">Turmas</a>
+      <a href="./inscricoes.html">Minhas inscrições</a>
+    </nav>
+    <div class="area-sessao" id="areaSessao"><a class="entrar" href="./entrar.html">Escolher perfil</a></div>
+  </aside>
+
+  <main class="container">
+    <h2>Minhas turmas (demo)</h2>
+    <p class="aviso" hidden id="avisoStatus" role="status"></p>
+
+    <ul class="grade-turmas" id="raizTurmas" aria-label="Turmas acessíveis ao perfil escolhido">
+      <!-- preenchido conforme o VÍNCULO do perfil escolhido (aluno vê a
+           própria; professora, o que leciona; pedagoga/direção, todas) -->
+    </ul>
+
+    <section id="painelTurma" hidden>
+      <h3 id="tituloTurma">Escolha uma turma</h3>
+      <section data-calendario="estatico-demo" id="raizCalendario" aria-label="Calendário da turma escolhida"></section>
+
+      <h3>Provas e atividades da turma <small>(dados de demonstração)</small></h3>
+      <ul class="lista-eventos" id="listaEventos"></ul>
+    </section>
+
+    <a class="voltar" href="./index.html">← Voltar ao início da demonstração</a>
+  </main>
+
+  <nav class="navegacao-inferior" aria-label="Navegação inferior (celular)">
+    <a href="./index.html"><strong>⌂</strong>Início</a>
+    <a href="./turma.html" aria-current="page"><strong>☰</strong>Turmas</a>
+    <a href="./inscricoes.html"><strong>✓</strong>Inscrições</a>
+  </nav>
+
+  <div class="faixa-sessao" id="faixaSessao"><span>Sessão</span></div>
+
+  <footer class="rodape">
+    CEPK Eventos — demonstração estática: dados fictícios marcados
+    "(demonstração)"; o produto real exige servidor próprio.
+  </footer>
+
+  <script src="./dados-demo.js"></script>
+  <script src="./calendario.js"></script>
+  <script src="./demo.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      document.addEventListener('DOMContentLoaded', function () {
+        // Sem perfil escolhido → volta para a escolha (não existe "anônimo")
+        var sessao = window.CEPKDemo.sessaoAtual();
+        if (!sessao) {
+          location.href = './entrar.html';
+          return;
+        }
+
+        var dados = window.CEPKDemoDados;
+
+        var ROTULO_TIPO = {
+          prova: 'Prova', feira: 'Feira', viagem: 'Viagem',
+          trabalho: 'Trabalho', boletim: 'Boletim', outro: 'Atividade',
+        };
+
+        var elAviso = document.getElementById('avisoStatus');
+        var elGrade = document.getElementById('raizTurmas');
+        var elPainel = document.getElementById('painelTurma');
+        var elTituloTurma = document.getElementById('tituloTurma');
+        var elCalendario = document.getElementById('raizCalendario');
+        var elLista = document.getElementById('listaEventos');
+
+        var listaTurmas = window.CEPKDemo.turmasVisiveis(dados, sessao);
+
+        function avisar(texto) {
+          elAviso.textContent = texto;
+          elAviso.hidden = !texto;
+        }
+
+        // Mesmíssima fachada de cartão da página real (dados do servidor lá,
+        // dos dados puros da demo aqui) — sem link de detalhe na demo.
+        function cartaoEvento(ev) {
+          var li = document.createElement('li');
+          li.className = 'cartao-evento';
+
+          var titulo = document.createElement('h3');
+          titulo.textContent = ev.titulo;
+          li.appendChild(titulo);
+
+          var meta = document.createElement('span');
+          meta.className = 'meta';
+          var mesmoDia = String(ev.inicio).slice(0, 10) === String(ev.fim).slice(0, 10);
+          meta.textContent = mesmoDia
+            ? window.CEPKDemo.dataCurta(ev.inicio) + ', ' + window.CEPKDemo.horaCurta(ev.inicio) + '–' +
+              window.CEPKDemo.horaCurta(ev.fim) + (ev.local ? ' — ' + ev.local : '')
+            : window.CEPKDemo.dataCurta(ev.inicio) + ' a ' + window.CEPKDemo.dataCurta(ev.fim) +
+              (ev.local ? ' — ' + ev.local : '');
+          li.appendChild(meta);
+
+          if (ev.exige_inscricao) {
+            var metaInscricao = document.createElement('span');
+            metaInscricao.className = 'meta';
+            metaInscricao.textContent = 'Exige inscrição: ' + Number(ev.vagas_restantes) +
+              ' de ' + Number(ev.vagas_total) + ' vagas — prazo ' +
+              window.CEPKDemo.dataCurta(ev.prazo_inscricao);
+            li.appendChild(metaInscricao);
+
+            var seloInscricao = document.createElement('span');
+            seloInscricao.className = 'selo selo--exige';
+            seloInscricao.textContent = 'Exige inscrição';
+            li.appendChild(seloInscricao);
+          }
+
+          var selo = document.createElement('span');
+          selo.className = 'selo ' + (ev.tipo === 'prova' ? 'selo--prova' : 'selo--atividade');
+          selo.textContent = ROTULO_TIPO[ev.tipo] || 'Atividade';
+          li.appendChild(selo);
+          return li;
+        }
+
+        function abrirTurma(turma) {
+          deselect();
+          if (turma._cartao) turma._cartao.classList.add('selecionado');
+
+          elPainel.hidden = false;
+          elTituloTurma.textContent = 'Turma ' + turma.nome_curto;
+          elCalendario.replaceChildren();
+          elLista.replaceChildren();
+          avisar('');
+
+          var eventos = window.CEPKDemo.eventosDaTurma(dados, turma.nome_curto);
+          window.CEPKCalendario.montar(
+            elCalendario, eventos, 'turma ' + turma.nome_curto + ' (demonstração)'
+          );
+
+          if (eventos.length === 0) {
+            var vazio = document.createElement('li');
+            vazio.className = 'cartao-evento';
+            vazio.textContent = 'Nenhuma atividade cadastrada para esta turma ainda.';
+            elLista.appendChild(vazio);
+          } else {
+            eventos.forEach(function (ev) { elLista.appendChild(cartaoEvento(ev)); });
+          }
+        }
+
+        function deselect() {
+          elGrade.querySelectorAll('.cartao-turma').forEach(function (cartao) {
+            cartao.classList.remove('selecionado');
+          });
+        }
+
+        function montarGrade() {
+          elGrade.replaceChildren();
+          listaTurmas.forEach(function (turma) {
+            var item = document.createElement('li');
+            item.className = 'cartao-turma';
+            item.setAttribute('role', 'button');
+            item.tabIndex = 0;
+            item.textContent = turma.nome_curto;
+
+            var sub = document.createElement('small');
+            sub.textContent = turma.tipo === 'tecnica' ? 'curso técnico (demonstração)' : 'turma regular (demonstração)';
+            item.appendChild(sub);
+
+            item.addEventListener('click', function () {
+              abrirTurma(turma);
+            });
+            item.addEventListener('keydown', function (tecla) {
+              if (tecla.key === 'Enter' || tecla.key === ' ') {
+                tecla.preventDefault();
+                item.click();
+              }
+            });
+
+            turma._cartao = item; // p/ marcar a selecionada
+            elGrade.appendChild(item);
+          });
+        }
+
+        if (listaTurmas.length === 0) {
+          avisar('Este perfil não tem nenhuma turma registrada na demonstração.');
+          return;
+        }
+
+        montarGrade();
+        if (listaTurmas.length === 1) {
+          // único vínculo (p. ex. aluno): abre automaticamente, como no real
+          abrirTurma(listaTurmas[0]);
+        } else {
+          elPainel.hidden = false;
+          elTituloTurma.textContent = 'Escolha uma turma';
+          var dica = document.createElement('li');
+          dica.className = 'cartao-evento';
+          dica.textContent = 'Clique em uma turma acima para ver o calendário e as atividades.';
+          elLista.appendChild(dica);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

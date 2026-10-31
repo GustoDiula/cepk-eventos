@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Início (demo) — CEPK Eventos</title>
+  <link rel="stylesheet" href="./main.css">
+</head>
+<body>
+  <div class="aviso-demo" role="note">
+    DEMONSTRAÇÃO — versão estática do projeto, publicada em páginas estáticas:
+    não há servidor, nada é enviado e as inscrições ficam DESABILITADAS.
+  </div>
+
+  <aside class="lateral" aria-label="Navegação principal">
+    <a class="marca" href="./index.html">CEPK Eventos<small>Colégio Estadual Presidente Kennedy</small></a>
+    <nav>
+      <a href="./index.html" aria-current="page">Início</a>
+      <a href="./turma.html">Turmas</a>
+      <a href="./inscricoes.html">Minhas inscrições</a>
+    </nav>
+    <div class="area-sessao" id="areaSessao"><a class="entrar" href="./entrar.html">Escolher perfil</a></div>
+  </aside>
+
+  <main class="container">
+    <h2>Demonstração estática do CEPK Eventos</h2>
+
+    <p>
+      Esta página é uma <strong>vitrine sem servidor</strong> do projeto
+      CEPK Eventos (a PWA completa precisa de Node.js + PostgreSQL, que páginas
+      estáticas não executam). Aqui você navega com os MESMOS 5 perfis de
+      demonstração do banco do projeto e as MESMAS atividades — todas marcadas
+      <em>(demonstração)</em>, pois nada é dado real do colégio.
+    </p>
+
+    <h3>O que funciona nesta demonstração</h3>
+    <ul>
+      <li>Escolher perfil <strong>sem senha alguma</strong> (no produto real será login institucional);</li>
+      <li>Turmas exibidas conforme o vínculo do perfil (aluno vê a própria; professora vê as 3 que leciona; pedagoga e direção veem todas);</li>
+      <li>Calendário mensal por turma com navegação ◀ ▶ e marca "Já passou" nas datas antigas;</li>
+      <li>Lista de provas e atividades com selos, locais e vagas de inscrição.</li>
+    </ul>
+
+    <h3>O que NÃO funciona aqui (exige o produto real com servidor)</h3>
+    <ul>
+      <li>Confirmar inscrição — os botões ficam desabilitados de propósito;</li>
+      <li>Login institucional de verdade e sessão com banco de dados;</li>
+      <li>Instalar como aplicativo e funcionar offline (exige a PWA servida por HTTPS);</li>
+      <li>Publicar, editar ou cancelar eventos (funções de professores autorizados e direção).</li>
+    </ul>
+
+    <p><a class="cta-demo" href="./entrar.html">Ver a demonstração</a></p>
+
+    <p class="aviso">
+      Dados de apresentação gerados do MESMO arquivo que semeia o banco de
+      demonstração do projeto — nenhuma informação da escola é real aqui.
+    </p>
+  </main>
+
+  <nav class="navegacao-inferior" aria-label="Navegação inferior (celular)">
+    <a href="./index.html" aria-current="page"><strong>⌂</strong>Início</a>
+    <a href="./turma.html"><strong>☰</strong>Turmas</a>
+    <a href="./inscricoes.html"><strong>✓</strong>Inscrições</a>
+  </nav>
+
+  <div class="faixa-sessao" id="faixaSessao"><span>Sessão</span></div>
+
+  <footer class="rodape">
+    CEPK Eventos — demonstração estática: dados fictícios marcados
+    "(demonstração)"; o produto real exige servidor próprio.
+  </footer>
+
+  <script src="./demo.js"></script>
+</body>
+</html>

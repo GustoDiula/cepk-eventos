@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Minhas inscrições (demo) — CEPK Eventos</title>
+  <link rel="stylesheet" href="./main.css">
+</head>
+<body>
+  <div class="aviso-demo" role="note">
+    DEMONSTRAÇÃO — versão estática sem servidor: nada é enviado e as
+    inscrições ficam DESABILITADAS.
+  </div>
+
+  <aside class="lateral" aria-label="Navegação principal">
+    <a class="marca" href="./index.html">CEPK Eventos<small>Colégio Estadual Presidente Kennedy</small></a>
+    <nav>
+      <a href="./index.html">Início</a>
+      <a href="./turma.html">Turmas</a>
+      <a href="./inscricoes.html" aria-current="page">Minhas inscrições</a>
+    </nav>
+    <div class="area-sessao" id="areaSessao"><a class="entrar" href="./entrar.html">Escolher perfil</a></div>
+  </aside>
+
+  <main class="container">
+    <h2>Minhas inscrições (demo)</h2>
+
+    <p class="aviso">
+      No produto real, a inscrição é confirmada APENAS pelo servidor — as vagas
+      e o prazo são conferidos lá, e a interface nunca finge confirmação.
+      Nesta demonstração estática NADA é enviado: os botões ficam
+      desabilitados de propósito.
+    </p>
+
+    <ul class="lista-eventos" id="raizInscricao" aria-label="Atividades do(s) seu(os) perfil(es) que exigem inscrição"></ul>
+
+    <a class="voltar" href="./index.html">← Voltar ao início da demonstração</a>
+  </main>
+
+  <nav class="navegacao-inferior" aria-label="Navegação inferior (celular)">
+    <a href="./index.html"><strong>⌂</strong>Início</a>
+    <a href="./turma.html"><strong>☰</strong>Turmas</a>
+    <a href="./inscricoes.html" aria-current="page"><strong>✓</strong>Inscrições</a>
+  </nav>
+
+  <div class="faixa-sessao" id="faixaSessao"><span>Sessão</span></div>
+
+  <footer class="rodape">
+    CEPK Eventos — demonstração estática: dados fictícios marcados
+    "(demonstração)"; o produto real exige servidor próprio.
+  </footer>
+
+  <script src="./dados-demo.js"></script>
+  <script src="./calendario.js"></script>
+  <script src="./demo.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      document.addEventListener('DOMContentLoaded', function () {
+        // Sem perfil escolhido → volta para a escolha
+        var sessao = window.CEPKDemo.sessaoAtual();
+        if (!sessao) {
+          location.href = './entrar.html';
+          return;
+        }
+
+        var dados = window.CEPKDemoDados;
+        var raiz = document.getElementById('raizInscricao');
+
+        // Atividades que EXIGEM inscrição, visíveis aos vínculos do perfil
+        var eventos = [];
+        window.CEPKDemo.turmasVisiveis(dados, sessao).forEach(function (turma) {
+          window.CEPKDemo.eventosDaTurma(dados, turma.nome_curto).forEach(function (ev) {
+            if (ev.exige_inscricao) eventos.push(ev);
+          });
+        });
+
+        if (eventos.length === 0) {
+          var vazio = document.createElement('li');
+          vazio.className = 'cartao-evento';
+          vazio.textContent = 'Nenhuma atividade do seu perfil exige inscrição no período da demonstração.';
+          raiz.appendChild(vazio);
+          return;
+        }
+
+        eventos.forEach(function (ev) {
+          var li = document.createElement('li');
+          li.className = 'cartao-evento';
+
+          var titulo = document.createElement('h3');
+          titulo.textContent = ev.titulo;
+          li.appendChild(titulo);
+
+          var meta = document.createElement('span');
+          meta.className = 'meta';
+          meta.textContent = 'Turma ' + ev.turma + ' · ' +
+            window.CEPKDemo.dataCurta(ev.inicio) + ', ' + window.CEPKDemo.horaCurta(ev.inicio) +
+            ' – ' + window.CEPKDemo.horaCurta(ev.fim) + (ev.local ? ' — ' + ev.local : '');
+          li.appendChild(meta);
+
+          var metaVagas = document.createElement('span');
+          metaVagas.className = 'meta';
+          metaVagas.textContent = 'Exige inscrição: ' + Number(ev.vagas_restantes) +
+            ' de ' + Number(ev.vagas_total) + ' vagas — prazo ' +
+            window.CEPKDemo.dataCurta(ev.prazo_inscricao);
+          li.appendChild(metaVagas);
+
+          var seloInscricao = document.createElement('span');
+          seloInscricao.className = 'selo selo--exige';
+          seloInscricao.textContent = 'Exige inscrição';
+          li.appendChild(seloInscricao);
+
+          var seloTurma = document.createElement('span');
+          seloTurma.className = 'selo selo--turma';
+          seloTurma.textContent = 'Turma ' + ev.turma;
+          li.appendChild(seloTurma);
+
+          var acoes = document.createElement('div');
+          acoes.className = 'botoes-acao';
+          var confirmar = document.createElement('button');
+          confirmar.className = 'desabilitada';
+          confirmar.disabled = true;
+          confirmar.textContent = 'Confirmar inscrição (desabilitado na demo)';
+          acoes.appendChild(confirmar);
+          li.appendChild(acoes);
+
+          raiz.appendChild(li);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

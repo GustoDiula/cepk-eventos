@@ -1,0 +1,766 @@
+/* ============================================================
+   CEPK Eventos — estilo base (redesign conforme protótipo, 2026-10-28)
+   Mobile-first: <768px usa navegação inferior fixa; ≥768px usa sidebar.
+   Media queries em 768px e 1440px (CA-07/RNF01). Sem frameworks —
+   arquitetura v2.0 (HTML/CSS/JS puros).
+   ============================================================ */
+
+:root {
+  --cor-tinta: #1c2430;
+  --cor-fundo: #f2f5f9;
+  --cor-primaria: #0a1f44;
+  --cor-primaria-clara: #17315e;
+  --cor-acento: #1b6ca8;
+  --cor-aviso: #7a4900;
+  --cor-borda: #d7dce4;
+  --cor-ok: #1e7a3f;        /* exige inscrição / confirmada */
+  --cor-opcional: #b45309;  /* inscrição opcional / em análise */
+  --cor-neutra: #5a6572;    /* aberto / cancelada */
+  --raio: 10px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: var(--cor-tinta);
+  background: var(--cor-fundo);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 4.25rem; /* espaço da navegação inferior no celular */
+}
+
+/* ------------------------------------------------------------
+   Sidebar (≥768px) e navegação inferior (<768px)
+   ------------------------------------------------------------ */
+.lateral {
+  display: none;
+}
+.navegacao-inferior {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  background: var(--cor-primaria);
+}
+.navegacao-inferior a {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.5rem 0.25rem 0.6rem;
+  color: #dce8f4;
+  font-size: 0.72rem;
+  text-decoration: none;
+  text-align: center;
+}
+.navegacao-inferior a strong {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.navegacao-inferior a[aria-current="page"] {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+}
+.navegacao-inferior a:hover,
+.navegacao-inferior a:focus-visible {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+@media (min-width: 768px) {
+  body {
+    display: grid;
+    grid-template-columns: 15rem 1fr;
+    padding-bottom: 0;
+  }
+  .navegacao-inferior { display: none; }
+
+  .lateral {
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    padding: 1.25rem 0.9rem;
+    background: var(--cor-primaria);
+    color: #fff;
+  }
+  .lateral .marca {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #fff;
+    text-decoration: none;
+    margin: 0.25rem 0.4rem 1.25rem;
+  }
+  .lateral .marca small {
+    display: block;
+    font-weight: 400;
+    font-size: 0.72rem;
+    color: #9db4d4;
+  }
+  .lateral nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .lateral nav a {
+    color: #dce8f4;
+    text-decoration: none;
+    padding: 0.55rem 0.7rem;
+    border-radius: var(--raio);
+    font-size: 0.95rem;
+  }
+  .lateral nav a[aria-current="page"] {
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+  }
+  .lateral nav a:hover,
+  .lateral nav a:focus-visible {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+  }
+  .lateral .entrar {
+    margin-top: auto;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    background: var(--cor-acento);
+    color: #fff;
+    padding: 0.6rem 0.7rem;
+    border-radius: var(--raio);
+    font-weight: 600;
+  }
+  .lateral .entrar:hover,
+  .lateral .entrar:focus-visible {
+    filter: brightness(1.15);
+  }
+}
+
+/* ------------------------------------------------------------
+   Área principal
+   ------------------------------------------------------------ */
+main.container {
+  width: 100%;
+  max-width: 100%;
+  padding: 1rem;
+  flex: 1;
+}
+main.container h2 {
+  font-size: 1.15rem;
+  margin: 1.25rem 0 0.5rem;
+}
+main.container h2:first-child {
+  margin-top: 0;
+}
+
+@media (min-width: 768px) {
+  main.container { max-width: 88rem; padding: 1.75rem 2rem; }
+}
+@media (min-width: 1440px) {
+  main.container { max-width: 100rem; }
+}
+
+.aviso {
+  background: #fff6e5;
+  color: var(--cor-aviso);
+  border: 1px solid #ffd98a;
+  border-radius: var(--raio);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+/* ------------------------------------------------------------
+   Cartões de evento + selos (badges)
+   ------------------------------------------------------------ */
+.lista-eventos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+.cartao-evento {
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: 0.75rem 1rem;
+}
+.cartao-evento h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+.cartao-evento .meta {
+  display: block;
+  color: var(--cor-neutra);
+  font-size: 0.85rem;
+}
+.selo {
+  display: inline-block;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.6rem;
+  margin: 0.35rem 0.35rem 0 0;
+  border: 1px solid transparent;
+  font-weight: 600;
+}
+.selo--geral    { background: #eaf3fb; color: var(--cor-acento); }
+.selo--turma    { background: #f0eafb; color: #5b3fa8; }
+.selo--exige    { background: #e6f4ea; color: var(--cor-ok); }
+.selo--opcional { background: #fdf2e2; color: var(--cor-opcional); }
+.selo--aberto   { background: #eef1f4; color: var(--cor-neutra); }
+
+@media (min-width: 768px) {
+  .lista-eventos--dupla {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ------------------------------------------------------------
+   Grade de turmas ("Turmas")
+   ------------------------------------------------------------ */
+.grade-turmas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: 1fr;
+}
+.cartao-turma {
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: 0.9rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  color: var(--cor-tinta);
+  font-weight: 600;
+}
+.cartao-turma small {
+  display: block;
+  font-weight: 400;
+  color: var(--cor-neutra);
+  margin-top: 0.2rem;
+}
+.cartao-turma:hover,
+.cartao-turma:focus-visible {
+  border-color: var(--cor-acento);
+}
+/* Turma escolhida (página de turmas, sessão real) */
+.cartao-turma.selecionado {
+  border-color: var(--cor-acento);
+  box-shadow: 0 0 0 2px var(--cor-acento);
+}
+@media (min-width: 768px) {
+  .grade-turmas { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ------------------------------------------------------------
+   Grade mensal do calendário (F-16) — tabela acessível
+   ------------------------------------------------------------ */
+.grade-calendario {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  overflow: hidden;
+  font-size: 0.8rem;
+}
+.grade-calendario caption {
+  caption-side: top;
+  text-align: left;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0 0 0.5rem;
+}
+.grade-calendario th {
+  background: var(--cor-primaria-clara);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.4rem 0.25rem;
+  text-align: center;
+}
+.grade-calendario td {
+  border: 1px solid #e8ecf1;
+  vertical-align: top;
+  min-width: 2.2rem;
+  height: 4.2rem;
+  padding: 0.3rem;
+}
+.grade-calendario .dia-num {
+  font-weight: 600;
+  color: var(--cor-neutra);
+  font-size: 0.75rem;
+}
+.grade-calendario td.fora { background: #f6f8fa; }
+.grade-calendario td.hoje {
+  outline: 2px solid var(--cor-acento);
+  outline-offset: -2px;
+  background: #f0f7fd;
+}
+.grade-calendario .ev {
+  display: block;
+  margin-top: 0.25rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.grade-calendario .ev-exige    { background: #e6f4ea; color: var(--cor-ok); font-weight: 600; }
+.grade-calendario .ev-opcional { background: #fdf2e2; color: var(--cor-opcional); font-weight: 600; }
+.grade-calendario .ev-aberto   { background: #eef1f4; color: var(--cor-neutra); font-weight: 600; }
+
+.legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  font-size: 0.8rem;
+  margin: 0.6rem 0 0;
+}
+.legenda span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.legenda .ponto {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  display: inline-block;
+}
+.ponto--exige    { background: var(--cor-ok); }
+.ponto--opcional { background: var(--cor-opcional); }
+.ponto--aberto   { background: #9aa5b1; }
+
+/* Filtros do calendário (visual — sem filtro real sem dados do servidor) */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 0.75rem;
+}
+.chips button {
+  border: 1px solid var(--cor-borda);
+  background: #fff;
+  color: var(--cor-tinta);
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.chips button[aria-pressed="true"] {
+  background: var(--cor-primaria);
+  border-color: var(--cor-primaria);
+  color: #fff;
+}
+
+/* ------------------------------------------------------------
+   Detalhe do evento + modal de confirmação
+   ------------------------------------------------------------ */
+.detalhe-evento {
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: 1rem;
+}
+.detalhe-evento dl {
+  margin: 1rem 0;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.4rem 1rem;
+}
+.detalhe-evento dt { font-weight: 600; }
+.detalhe-evento dd { margin: 0; }
+
+.botoes-acao {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  align-items: center;
+}
+button.desabilitada {
+  background: #c9d2dc;
+  color: #45505c;
+  border: 0;
+  border-radius: var(--raio);
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  cursor: not-allowed;
+}
+button.primario:disabled,
+button.secundario:disabled {
+  background: #c9d2dc;
+  color: #6b7683;
+  border-color: transparent;
+  cursor: not-allowed;
+  font-weight: 500;
+}
+button.primario:not(:disabled):hover,
+button.primario:not(:disabled):focus-visible {
+  filter: brightness(1.12);
+}
+button.primario {
+  background: var(--cor-acento);
+  color: #fff;
+  border: 0;
+  border-radius: var(--raio);
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+button.secundario {
+  background: #fff;
+  color: var(--cor-tinta);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+dialog#modalInscricao {
+  border: 0;
+  border-radius: 12px;
+  padding: 0;
+  max-width: 24rem;
+  width: calc(100% - 2rem);
+  box-shadow: 0 12px 40px rgba(10, 31, 68, 0.35);
+}
+dialog#modalInscricao::backdrop {
+  background: rgba(10, 31, 68, 0.45);
+}
+.modal-interno {
+  padding: 1.25rem;
+}
+.modal-interno h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+}
+.modal-interno ul {
+  margin: 0.5rem 0;
+  padding-left: 1.1rem;
+  font-size: 0.9rem;
+  color: #45505c;
+}
+.modal-acoes {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+/* ------------------------------------------------------------
+   Minhas inscrições: abas + cartões de estado
+   ------------------------------------------------------------ */
+.abas {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0 0 1rem;
+  border-bottom: 2px solid var(--cor-borda);
+}
+.abas button {
+  border: 0;
+  background: transparent;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  color: var(--cor-neutra);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+}
+.abas button[aria-selected="true"] {
+  color: var(--cor-primaria);
+  font-weight: 600;
+  border-bottom-color: var(--cor-primaria);
+}
+.painel-aba[hidden] { display: none; }
+
+.estado {
+  display: inline-block;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.18rem 0.65rem;
+}
+.estado--confirmada { background: #e6f4ea; color: var(--cor-ok); }
+.estado--analise    { background: #fdf2e2; color: var(--cor-opcional); }
+.estado--cancelada  { background: #eef1f4; color: var(--cor-neutra); }
+
+.voltar {
+  display: inline-block;
+  margin-top: 1rem;
+  text-decoration: none;
+  color: var(--cor-acento);
+}
+
+/* ------------------------------------------------------------
+   Rodapé e banner offline
+   ------------------------------------------------------------ */
+.rodape {
+  padding: 1rem;
+  text-align: center;
+  color: var(--cor-neutra);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--cor-borda);
+}
+
+#bannerOffline {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #7a1e1e;
+  color: #fff;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  line-height: 1.3;
+  text-align: center;
+}
+
+/* Foco visível para teclado (acessibilidade) */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--cor-acento);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------
+   Sessão de usuário (sessão real de servidor, D-024) — sidebar e faixa
+   ------------------------------------------------------------ */
+.area-sessao {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: auto;
+}
+.nome-demo {
+  font-size: 0.85rem;
+  color: #fff;
+  padding: 0 0.2rem;
+  word-break: break-all;
+}
+.sair-demo {
+  background: transparent;
+  color: #dce8f4;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: var(--raio);
+  padding: 0.4rem 0.7rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.sair-demo:hover,
+.sair-demo:focus-visible {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+.lateral .entrar {
+  display: block;
+}
+/* Esconde o link estático "Entrar" da sidebar quando a sessão é renderizada */
+.area-sessao:has(.sair-demo) ~ * { }
+
+/* Faixa de sessão demo no celular (navegação inferior esconde a sidebar) */
+.faixa-sessao {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 4.25rem;
+  z-index: 19;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  background: var(--cor-primaria-clara);
+  color: #fff;
+  font-size: 0.8rem;
+}
+.faixa-sessao .sair-demo {
+  padding: 0.25rem 0.6rem;
+}
+html.com-sessao .faixa-sessao {
+  display: flex;
+}
+@media (min-width: 768px) {
+  html.com-sessao .faixa-sessao { display: none; }
+}
+
+/* ------------------------------------------------------------
+   Feriados do Paraná (D-019) — selos e marcas na grade
+   ------------------------------------------------------------ */
+.selo--feriado       { background: #fdecec; color: #a12828; }
+.selo--feriadoest    { background: #fff7e6; color: #8a5b00; }
+.selo--facultativo   { background: #eef1f4; color: var(--cor-neutra); }
+.selo--prova         { background: #e8f0fc; color: #1a4f9c; }
+.selo--atividade     { background: #eafbf2; color: #17764b; }
+
+.grade-calendario .ev-feriado     { background: #fdecec; color: #a12828; font-weight: 600; }
+.grade-calendario .ev-feriadoest  { background: #fff7e6; color: #8a5b00; font-weight: 600; }
+.grade-calendario .ev-facultativo { background: #eef1f4; color: var(--cor-neutra); }
+.grade-calendario .ev-prova       { background: #e8f0fc; color: #1a4f9c; font-weight: 600; }
+.grade-calendario .ev-atividade   { background: #eafbf2; color: #17764b; font-weight: 600; }
+
+.legenda .ponto--feriado     { background: #d05454; }
+.legenda .ponto--feriadoest  { background: #e6a23c; }
+.legenda .ponto--facultativo { background: #9aa5b1; }
+.legenda .ponto--prova       { background: #3b6fc4; }
+.legenda .ponto--atividade   { background: #2fbf79; }
+
+/* ------------------------------------------------------------
+   Calendário — navegação de meses e estado "passado" (D-021)
+   ------------------------------------------------------------ */
+.nav-mes {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.seta-mes {
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: #fff;
+  color: var(--cor-primaria);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.35rem 0.65rem;
+  cursor: pointer;
+}
+.seta-mes:hover:not(:disabled),
+.seta-mes:focus-visible {
+  background: var(--cor-primaria-clara);
+  color: #fff;
+}
+.seta-mes:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.titulo-mes {
+  font-weight: 700;
+  font-size: 1.05rem;
+  min-width: 8.5rem;
+  text-align: center;
+}
+.hoje-mes {
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: #fff;
+  color: var(--cor-neutra);
+  font-size: 0.8rem;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+}
+.hoje-mes:hover,
+.hoje-mes:focus-visible {
+  border-color: var(--cor-acento);
+  color: var(--cor-primaria);
+}
+
+/* Dias/marcas/cartões anteriores a hoje: cinza, sem enganar (D-021) */
+.grade-calendario td.passado .dia-num {
+  color: var(--cor-neutra);
+}
+.grade-calendario td.passado {
+  background: #f6f7f8;
+}
+.grade-calendario .ev-passado {
+  opacity: 0.6;
+  filter: grayscale(0.6);
+}
+.cartao-evento.passado {
+  opacity: 0.65;
+}
+.cartao-evento.passado h3 {
+  color: var(--cor-neutra);
+}
+.selo--passado {
+  background: #eef1f4;
+  color: var(--cor-neutra);
+}
+
+/* ------------------------------------------------------------
+   Formulário de login de demonstração (D-018)
+   ------------------------------------------------------------ */
+.form-login {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 24rem;
+}
+.form-login label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.form-login input {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+.form-login input:focus-visible {
+  outline: 2px solid var(--cor-acento);
+  outline-offset: 1px;
+}
+
+/* ------------------------------------------------------------
+   Login real (D-024) � contas de demonstra��o listadas na p�gina
+   ------------------------------------------------------------ */
+.lista-contas-demo {
+  line-height: 1.8;
+  padding-left: 1.2rem;
+}
+.lista-contas-demo code {
+  background: var(--cor-primaria-clara);
+  color: #fff;
+  border-radius: 6px;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.85rem;
+}
+
+/* ------------------------------------------------------------
+   USO EXCLUSIVO DA DEMO ESTÁTICA (pasta demo/, GitHub Pages — D-026).
+   main.css é copiado byte a byte para demo/main.css (fonte única de
+   estilo); estas regras ficam INATIVAS nas páginas reais (nenhuma
+   página do produto usa as classes abaixo).
+   ------------------------------------------------------------ */
+/* Faixa fixa de "modo demonstração" no topo de toda página da demo */
+.aviso-demo {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: #7a1e1e;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  text-align: center;
+  /* No desktop a demo é <body> como grade de 2 colunas (sidebar+conteúdo):
+     sem isto o banner OCUPARIA a célula do 1º item e deslocaria tudo. */
+  grid-column: 1 / -1;
+}
+/* Link no formato botão primário (CTA da página inicial da demo) */
+.cta-demo {
+  display: inline-block;
+  background: var(--cor-acento);
+  color: #fff;
+  padding: 0.6rem 1rem;
+  border-radius: var(--raio);
+  font-weight: 600;
+  text-decoration: none;
+}
+.cta-demo:hover,
+.cta-demo:focus-visible {
+  filter: brightness(1.12);
+}

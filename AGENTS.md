@@ -60,16 +60,22 @@ cepk-eventos/
 ├── package.json / package-lock.json
 ├── .env.example                   ← modelo de variáveis (NUNCA o .env real)
 ├── .gitignore                     ← mantém o .env LOCAL fora do Git
+├── .github/workflows/deploy-demo.yml  ← publica demo/ no GitHub Pages a cada push (D-026)
 ├── backup/
 │   └── cepk-eventos-backup-2026-10-29.zip  ← backup do projeto (zip: código + histórico .git; sem .env e sem node_modules)
+├── demo/                          ← DEMONSTRAÇÃO ESTÁTICA para o GitHub Pages (D-026) — produto real INTACTO
+│   ├── index.html · entrar.html (escolha de perfil, SEM senha) · turma.html · inscricoes.html (botões desabilitados)
+│   ├── demo.js                    ← sessão de demo na sessionStorage (chave cepkDemo) + turmas/eventos por vínculo
+│   └── main.css · calendario.js · dados-demo.js   ← GERADOS por scripts/gerar-demo.cjs (fonte única: seed-demo.js)
 ├── scripts/
 │   ├── gerar-icones.ps1           ← gera os ícones do PWA
-│   ├── pgsql-start.ps1            ← inicia o PostgreSQL portátil local (D-011)
+│   ├── gerar-demo.cjs             ← gera a demonstração estática (cópias byte a byte + dados puros) (D-026)
+│   ├── pgsql-start.ps1            ← inicia o PostgreSQL portátil local (D-011; 100% ASCII por causa do PS 5.1)
 │   └── pgsql-stop.ps1             ← para o PostgreSQL portátil
 ├── docs/
 │   ├── requisitos.md              ← requisitos funcionais/não funcionais e regras de negócio
 │   ├── arquitetura.md             ← arquitetura (v2.0) + §5A perfis e permissões (implementados)
-│   ├── decisoes.md                ← registro de decisões (D-001..D-025)
+│   ├── decisoes.md                ← registro de decisões (D-001..D-026)
 │   ├── modelo-de-dados.md         ← v1.1 (IMPLEMENTADA, etapas 2–5)
 │   ├── api.md                     ← v1.1: §3.0 endpoints reais + contrato futuro (etapas 6–9)
 │   └── pwa.md / plano-de-desenvolvimento.md
@@ -77,7 +83,7 @@ cepk-eventos/
 │   ├── backend/
 │   │   ├── app.js                 ← Express: sessão no PG (D-024) + estáticos + 401/404 de API
 │   │   ├── server.js · config/ (env.js · session.js)
-│   │   ├── db/ (pool.js · schema.sql · seed-demo.js ← semente de demonstração IDEMPOTENTE)
+│   │   ├── db/ (pool.js · schema.sql · seed-demo.js ← semente IDEMPOTENTE + fonte dos dados puros da demo D-026)
 │   │   ├── middlewares/ (authenticate.js · limitarTentativasLogin.js · errorHandler.js)
 │   │   ├── routes/ (health.routes.js · auth.routes.js · turmas.routes.js)
 │   │   ├── services/turmas-permissao.js  ← vínculos do BANCO decidem o acesso (D-004/D-025)
@@ -93,7 +99,7 @@ cepk-eventos/
 │       ├── js/ (api.js · calendario.js · offline.js · sessao.js ← consulta /auth/me)
 │       └── pwa/ (manifest.webmanifest · service-worker.js cepk-shell-v6 · icons/ 192·512·maskable)
 └── tests/
-    ├── unit/ (backend.health · pwa.manifest)
+    ├── unit/ (backend.health · pwa.manifest · demo.estatica)
     ├── integration/ (frontend.http.test.mjs · auth.db.test.mjs ← 8 grupos de teste do autor)
     └── e2e/ (roteiro.frontend.md · roteiro.pwa.md) · *.gitkeep
 ```
@@ -106,6 +112,11 @@ cepk-eventos/
 > PostgreSQL — vivem APENAS ali (fora do Git), nunca em código, interface ou docs.
 > Banco de demonstração: 5 contas `.test` com vínculos registrados
 > (2 alunos · prof. Geografia em 3 turmas · pedagogia/direção em todas as 10).
+
+> Atualização 2026-10-30: D-026 — demonstração ESTÁTICA para o GitHub Pages
+> (pasta `demo/`, gerada por `npm run demo:gerar` + workflow do Actions). O
+> login é substituído por ESCOLHA DE PERFIL (sem senha); inscrições desabilitadas
+> com aviso; sem service worker/manifest. Produto real e PWA (etapas 6–10) NÃO mudam.
 
 > Atualize esta seção sempre que a estrutura do repositório mudar
 > (explique a alteração ao autor antes, conforme a regra 2).

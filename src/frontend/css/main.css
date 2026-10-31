@@ -715,7 +715,7 @@ html.com-sessao .faixa-sessao {
 }
 
 /* ------------------------------------------------------------
-   Login real (D-024) � contas de demonstra��o listadas na p�gina
+   Login real (D-024) � contas de demonstra��o listadas na p�gina
    ------------------------------------------------------------ */
 .lista-contas-demo {
   line-height: 1.8;
@@ -727,4 +727,40 @@ html.com-sessao .faixa-sessao {
   border-radius: 6px;
   padding: 0.15rem 0.45rem;
   font-size: 0.85rem;
+}
+
+/* ------------------------------------------------------------
+   USO EXCLUSIVO DA DEMO ESTÁTICA (pasta demo/, GitHub Pages — D-026).
+   main.css é copiado byte a byte para demo/main.css (fonte única de
+   estilo); estas regras ficam INATIVAS nas páginas reais (nenhuma
+   página do produto usa as classes abaixo).
+   ------------------------------------------------------------ */
+/* Faixa fixa de "modo demonstração" no topo de toda página da demo */
+.aviso-demo {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: #7a1e1e;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  text-align: center;
+  /* No desktop a demo é <body> como grade de 2 colunas (sidebar+conteúdo):
+     sem isto o banner OCUPARIA a célula do 1º item e deslocaria tudo. */
+  grid-column: 1 / -1;
+}
+/* Link no formato botão primário (CTA da página inicial da demo) */
+.cta-demo {
+  display: inline-block;
+  background: var(--cor-acento);
+  color: #fff;
+  padding: 0.6rem 1rem;
+  border-radius: var(--raio);
+  font-weight: 600;
+  text-decoration: none;
+}
+.cta-demo:hover,
+.cta-demo:focus-visible {
+  filter: brightness(1.12);
 }

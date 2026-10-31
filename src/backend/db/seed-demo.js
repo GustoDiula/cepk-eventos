@@ -1,15 +1,20 @@
 // Inicialização REPRODUZÍVEL do ambiente de demonstração (pedido 28/10/2026 §4).
 //
-// Executar: npm run seed-demo   (ou: node --env-file-if-exists=.env src/backend/db/seed-demo.js)
+// Executar: npm run db:demonstracao   (ou: node --env-file-if-exists=.env src/backend/db/seed-demo.js)
 //
 // Regras SÉRIAS desta etapa:
 //   • A SENHA de demonstração NUNCA fica no código, no Git, no frontend ou em logs:
-//     o script Lê SENHA_DEMO do .env local (gitignored) e guarda APENAS o hash bcrypt.
-//   • Sem a variável, o script SE REUSA (erro claro) — nada é inventado.
+//     o script LÊ SENHA_DEMO do .env local (gitignored) e guarda APENAS o hash bcrypt.
+//   • Sem a variável, o script SE RECUSA (erro claro) — nada é inventado.
 //   • Idempotência: reexecutar não duplica (ON CONFLICT DO NOTHING); dados alterados
 //     manualmente não são sobrescritos.
 //   • Todas as atividades implantadas aqui carregam a marca "(demonstração)" — nunca
 //     se passam por dados reais do colégio (regra 3 do AGENTS.md).
+//
+// FONTE ÚNICA (D-026): este arquivo também exporta os DADOS PUROS de demonstração
+// (turmas, contas SEM hash, narrativa de eventos e vínculos por nome/e-mail).
+// scripts/gerar-demo.cjs os usa para montar a demo estática do GitHub Pages —
+// assim há UM só jogo de dados no projeto (o mesmo do banco), nunca uma cópia.
 //
 // Contas (5 — dois alunos, um professor, uma pedagoga, uma diretora):
 //   aluno1@cepk-eventos.test        → turma 1º A
@@ -35,6 +40,16 @@ const TURMAS = [
   { nome_curto: '3º DSB', tipo: 'tecnica' },
   { nome_curto: '3º DSC', tipo: 'tecnica' },
   { nome_curto: '3º ADM', tipo: 'tecnica' },
+];
+
+const CONTAS = [
+  // Dados PUROS — NENHUMA senha aqui: a senha inicial vive só no .env LOCAL
+  // e entra no banco como hash bcrypt (função hashDaSenhaDemo).
+  { email: 'aluno1@cepk-eventos.test', nome: 'Aluno Demo 1', papel: 'aluno' },
+  { email: 'aluno2@cepk-eventos.test', nome: 'Aluno Demo 2', papel: 'aluno' },
+  { email: 'prof.geografia@cepk-eventos.test', nome: 'Professora de Geografia (demo)', papel: 'professor' },
+  { email: 'pedagoga1@cepk-eventos.test', nome: 'Pedagoga 1 (demo)', papel: 'pedagogia' },
+  { email: 'diretora@cepk-eventos.test', nome: 'Diretora (demo)', papel: 'direcao' },
 ];
 
 // Hash é calculado UMA vez por execução (custo 10 — equilíbrio padrão)
@@ -67,14 +82,7 @@ async function semearTurmas(pool) {
 }
 
 async function semearUsuarios(pool, hash) {
-  const contas = [
-    { email: 'aluno1@cepk-eventos.test', nome: 'Aluno Demo 1', papel: 'aluno' },
-    { email: 'aluno2@cepk-eventos.test', nome: 'Aluno Demo 2', papel: 'aluno' },
-    { email: 'prof.geografia@cepk-eventos.test', nome: 'Professora de Geografia (demo)', papel: 'professor' },
-    { email: 'pedagoga1@cepk-eventos.test', nome: 'Pedagoga 1 (demo)', papel: 'pedagogia' },
-    { email: 'diretora@cepk-eventos.test', nome: 'Diretora (demo)', papel: 'direcao' },
-  ];
-  for (const conta of contas) {
+  for (const conta of CONTAS) {
     await pool.query(
       `INSERT INTO usuarios (email, nome, papel, senha_hash)
        VALUES ($1, $2, $3, $4)
@@ -82,6 +90,27 @@ async function semearUsuarios(pool, hash) {
       [conta.email, conta.nome, conta.papel, hash]
     );
   }
+}
+
+// Vínculos de demonstração — DADOS PUROS (identificados por e-mail + nome de
+// turma, sem ids): consumidos pelo seed (abaixo) e pela demo estática (D-026).
+function vinculosDemo() {
+  return {
+    // Aluno 1 → 1º A · Aluno 2 → 1º B (aprovado pelo autor)
+    alunos: [
+      { email: 'aluno1@cepk-eventos.test', turma: '1º A' },
+      { email: 'aluno2@cepk-eventos.test', turma: '1º B' },
+    ],
+    // Professora de Geografia → 1º A, 1º B, 1º C (aprovado)
+    docencia: [
+      { email: 'prof.geografia@cepk-eventos.test', disciplina: 'Geografia', turmas: ['1º A', '1º B', '1º C'] },
+    ],
+    // Pedagoga 1 → as 10 turmas listadas (aprovado: todas as 10)
+    pedagogia: [
+      { email: 'pedagoga1@cepk-eventos.test', turmas: TURMAS.map((t) => t.nome_curto) },
+    ],
+    // Diretoria: papel 'direcao' já abrange todas — NENHUMA linha de vínculo
+  };
 }
 
 async function semearVinculos(pool) {
@@ -93,71 +122,63 @@ async function semearVinculos(pool) {
   const turmaDe = (nome) => idDe('turmas', 'nome_curto', nome);
   const usuarioDe = (email) => idDe('usuarios', 'email', email);
 
-  // INSERT ... ON CONFLICT não devolve linhas: busca o id por SELECT
-  await pool.query(`INSERT INTO disciplinas (nome) VALUES ('Geografia') ON CONFLICT (nome) DO NOTHING`);
-  const disciplinaGeografia = await idDe('disciplinas', 'nome', 'Geografia');
+  const vinculos = vinculosDemo();
 
-  // Aluno 1 → 1º A · Aluno 2 → 1º B (aprovado pelo autor)
-  const aluno1 = await usuarioDe('aluno1@cepk-eventos.test');
-  const aluno2 = await usuarioDe('aluno2@cepk-eventos.test');
-  const turmaA = await turmaDe('1º A');
-  const turmaB = await turmaDe('1º B');
+  const disciplinaNome = vinculos.docencia[0].disciplina;
   await pool.query(
-    `INSERT INTO vinculos_aluno_turma (usuario_id, turma_id) VALUES ($1, $2)
-     ON CONFLICT DO NOTHING`,
-    [aluno1, turmaA]
+    `INSERT INTO disciplinas (nome) VALUES ($1) ON CONFLICT (nome) DO NOTHING`,
+    [disciplinaNome]
   );
-  await pool.query(
-    `INSERT INTO vinculos_aluno_turma (usuario_id, turma_id) VALUES ($1, $2)
-     ON CONFLICT DO NOTHING`,
-    [aluno2, turmaB]
-  );
+  const disciplinaId = await idDe('disciplinas', 'nome', disciplinaNome);
 
-  // Professora de Geografia → 1º A, 1º B, 1º C (aprovado)
-  const prof = await usuarioDe('prof.geografia@cepk-eventos.test');
-  for (const turmaNome of ['1º A', '1º B', '1º C']) {
+  for (const aluno of vinculos.alunos) {
     await pool.query(
-      `INSERT INTO vinculos_docencia (usuario_id, turma_id, disciplina_id) VALUES ($1, $2, $3)
+      `INSERT INTO vinculos_aluno_turma (usuario_id, turma_id) VALUES ($1, $2)
        ON CONFLICT DO NOTHING`,
-      [prof, await turmaDe(turmaNome), disciplinaGeografia]
+      [await usuarioDe(aluno.email), await turmaDe(aluno.turma)]
     );
   }
 
-  // Pedagoga 1 → as 10 turmas listadas (aprovado: todas as 10)
-  const pedagoga = await usuarioDe('pedagoga1@cepk-eventos.test');
-  for (const t of TURMAS) {
-    await pool.query(
-      `INSERT INTO vinculos_pedagogia (usuario_id, turma_id) VALUES ($1, $2)
-       ON CONFLICT DO NOTHING`,
-      [pedagoga, await turmaDe(t.nome_curto)]
-    );
+  for (const docente of vinculos.docencia) {
+    const prof = await usuarioDe(docente.email);
+    for (const turmaNome of docente.turmas) {
+      await pool.query(
+        `INSERT INTO vinculos_docencia (usuario_id, turma_id, disciplina_id) VALUES ($1, $2, $3)
+         ON CONFLICT DO NOTHING`,
+        [prof, await turmaDe(turmaNome), disciplinaId]
+      );
+    }
   }
 
-  // Diretoria: papel 'direcao' já abrange todas — nada de linha especial
+  for (const pedagogo of vinculos.pedagogia) {
+    const pedagoga = await usuarioDe(pedagogo.email);
+    for (const turmaNome of pedagogo.turmas) {
+      await pool.query(
+        `INSERT INTO vinculos_pedagogia (usuario_id, turma_id) VALUES ($1, $2)
+         ON CONFLICT DO NOTHING`,
+        [pedagoga, await turmaDe(turmaNome)]
+      );
+    }
+  }
 
-  return { diretoraId: await usuarioDe('diretora@cepk-eventos.test') };
+  const diretora = CONTAS.find((c) => c.papel === 'direcao');
+  return { diretoraId: await usuarioDe(diretora.email) };
 }
 
-// Atividades FICTÍCIAS claramente marcadas "(demonstração)" para TODAS as turmas
-// (autor escolheu "fictício em todas"). 1º A espelha a narrativa das telas.
-async function semearEventos(pool, criadoPor) {
-  const turmaPorNome = {};
-  for (const t of TURMAS) {
-    const { rows } = await pool.query('SELECT id FROM turmas WHERE nome_curto = $1', [t.nome_curto]);
-    turmaPorNome[t.nome_curto] = rows[0].id;
-  }
-
+// NARRATIVA FICTÍCIA das atividades — DADOS PUROS (turma por NOME, resolves no
+// seed): mesmas 27 atividades de TODAS as turmas, claramente marcadas
+// "(demonstração)". 1º A espelha a narrativa das telas (RF15 mantida).
+function narrativaEventosDemo() {
   function evento(turma, titulo, tipo, data, horaInicio, horaFim, local, inscricao = null) {
     const inicio = `${data}T${horaInicio}:00-03:00`;
     const fim = `${data}T${horaFim}:00-03:00`;
     return {
-      titulo, tipo, inicio, fim, local,
-      escopo: 'turma', turma_id: turmaPorNome[turma], criado_por: criadoPor,
+      turma, titulo, tipo, inicio, fim, local,
       ...(inscricao ? { exige_inscricao: true, vagas_total: 45, vagas_restantes: 30, prazo_inscricao: inscricao } : {}),
     };
   }
 
-  const eventos = [
+  return [
     // 1º A — mesma narrativa das telas aprovadas (RF15 mantida)
     evento('1º A', 'Prova de Matemática (demonstração)', 'prova', '2026-10-28', '08:00', '09:30', 'Sala 12'),
     evento('1º A', 'Prova de História (demonstração)', 'prova', '2026-11-04', '08:00', '09:30', 'Sala 12'),
@@ -192,6 +213,16 @@ async function semearEventos(pool, criadoPor) {
     evento('3º ADM', 'Prova técnica (demonstração)', 'prova', '2026-11-19', '08:00', '09:30', 'Sala 43'),
     evento('3º ADM', 'Entrega de boletim (demonstração)', 'boletim', '2026-12-11', '19:00', '20:00', 'Sala 43'),
   ];
+}
+
+async function semearEventos(pool, criadoPor) {
+  const turmaPorNome = {};
+  for (const t of TURMAS) {
+    const { rows } = await pool.query('SELECT id FROM turmas WHERE nome_curto = $1', [t.nome_curto]);
+    turmaPorNome[t.nome_curto] = rows[0].id;
+  }
+
+  const eventos = narrativaEventosDemo();
 
   for (const ev of eventos) {
     // IDEMPOTÊNCIA dos eventos: 'eventos' não tem chave única (id é sequência),
@@ -199,7 +230,7 @@ async function semearEventos(pool, criadoPor) {
     // Confere ANTES: mesmos turma + titulo + inicio ⇒ já implantado, pula.
     const jaExiste = await pool.query(
       `SELECT 1 FROM eventos WHERE turma_id = $1 AND titulo = $2 AND inicio = $3 AND status = 'ativo' LIMIT 1`,
-      [ev.turma_id, ev.titulo, ev.inicio]
+      [turmaPorNome[ev.turma], ev.titulo, ev.inicio]
     );
     if (jaExiste.rowCount > 0) continue;
 
@@ -216,13 +247,13 @@ async function semearEventos(pool, criadoPor) {
         ev.inicio,
         ev.fim,
         ev.tipo,
-        ev.escopo,
-        ev.turma_id,
+        'turma',
+        turmaPorNome[ev.turma],
         ev.exige_inscricao ?? false,
         ev.vagas_total ?? null,
         ev.vagas_restantes ?? null,
         ev.prazo_inscricao ?? null,
-        ev.criado_por,
+        criadoPor,
       ]
     );
   }
@@ -254,9 +285,18 @@ async function executar() {
   return resumo.rows[0];
 }
 
-module.exports = { executar, aplicarSchema };
+module.exports = {
+  // dados puros (fonte única: p/ seed, testes e demo estática — D-026)
+  TURMAS,
+  CONTAS,
+  narrativaEventosDemo,
+  vinculosDemo,
+  // própios de banco de verdade
+  executar,
+  aplicarSchema,
+};
 
-// Invocável direto: npm run seed-demo
+// Invocável direto: npm run db:demonstracao
 if (require.main === module) {
   executar()
     .then((r) => {

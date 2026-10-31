@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Escolher perfil (demo) — CEPK Eventos</title>
+  <link rel="stylesheet" href="./main.css">
+</head>
+<body>
+  <div class="aviso-demo" role="note">
+    DEMONSTRAÇÃO — versão estática sem servidor: nada é enviado e as
+    inscrições ficam DESABILITADAS.
+  </div>
+
+  <aside class="lateral" aria-label="Navegação principal">
+    <a class="marca" href="./index.html">CEPK Eventos<small>Colégio Estadual Presidente Kennedy</small></a>
+    <nav>
+      <a href="./index.html">Início</a>
+      <a href="./turma.html">Turmas</a>
+      <a href="./inscricoes.html">Minhas inscrições</a>
+    </nav>
+    <div class="area-sessao" id="areaSessao"><a class="entrar" href="./entrar.html">Escolher perfil</a></div>
+  </aside>
+
+  <main class="container">
+    <h2>Escolher um perfil de demonstração</h2>
+
+    <p>
+      Nesta versão estática o login foi substituído pela <strong>escolha do
+      perfil</strong> — não há senha alguma para digitar. São as MESMAS 5
+      contas de demonstração do banco do projeto (e-mails terminados em
+      <code>@cepk-eventos.test</code>).
+    </p>
+
+    <p class="aviso">
+      A escolha vale apenas nesta janela (guardada na sessionStorage) e some
+      ao fechar a página — sem senha, sem conta, sem servidor.
+    </p>
+
+    <ul class="grade-turmas" id="raizPerfis" aria-label="Perfis de demonstração"></ul>
+
+    <a class="voltar" href="./index.html">← Voltar ao início da demonstração</a>
+  </main>
+
+  <nav class="navegacao-inferior" aria-label="Navegação inferior (celular)">
+    <a href="./index.html"><strong>⌂</strong>Início</a>
+    <a href="./turma.html"><strong>☰</strong>Turmas</a>
+    <a href="./inscricoes.html"><strong>✓</strong>Inscrições</a>
+  </nav>
+
+  <div class="faixa-sessao" id="faixaSessao"><span>Sessão</span></div>
+
+  <footer class="rodape">
+    CEPK Eventos — demonstração estática; o produto real terá login
+    institucional e banco de dados.
+  </footer>
+
+  <script src="./dados-demo.js"></script>
+  <script src="./demo.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      document.addEventListener('DOMContentLoaded', function () {
+        // Já escolheu perfil nesta janela? Vai direto para as turmas.
+        if (window.CEPKDemo.sessaoAtual()) {
+          location.href = './turma.html';
+          return;
+        }
+
+        var raiz = document.getElementById('raizPerfis');
+
+        window.CEPKDemoDados.contas.forEach(function (conta) {
+          var item = document.createElement('li');
+          item.className = 'cartao-turma';
+          item.setAttribute('role', 'button');
+          item.tabIndex = 0;
+          item.textContent = conta.nome;
+
+          var sub = document.createElement('small');
+          sub.textContent = (window.CEPKDemo.ROTULO_PAPEL[conta.papel] || conta.papel) +
+            ' · ' + conta.email;
+          item.appendChild(sub);
+
+          item.addEventListener('click', function () {
+            window.CEPKDemo.guardarSessao(conta);
+          });
+          item.addEventListener('keydown', function (tecla) {
+            if (tecla.key === 'Enter' || tecla.key === ' ') {
+              tecla.preventDefault();
+              item.click();
+            }
+          });
+
+          raiz.appendChild(item);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

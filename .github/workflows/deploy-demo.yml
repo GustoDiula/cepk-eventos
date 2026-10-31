@@ -1,0 +1,61 @@
+# Publica a DEMONSTRAÇÃO ESTÁTICA (pasta demo/) no GitHub Pages.
+#
+# O produto real NÃO sai daqui: páginas estáticas não executam Node.js
+# (Express) nem PostgreSQL — por isso a pasta demo/ existe (decisão nos
+# docs/decisoes.md): o mesmo CSS, o mesmo calendário e os MESMOS dados do
+# seed de demonstração, regenerados a cada push para você nunca ver dados
+# velhos. As páginas REAIS do projeto continuam exigindo o servidor local.
+#
+# Este workflow EXIGE que a aba Settings > Pages do repositório esteja com
+# "Build and deployment > Source = GitHub Actions" (clique único do autor).
+
+name: Publicar demonstração estática (Pages)
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Um deploy por vez: novo push cancela a publicação anterior em andamento
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.publicacao.outputs.page_url }}
+    steps:
+      - name: Baixar o repositório
+        uses: actions/checkout@v4
+
+      - name: Preparar o Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Regenerar a demonstração (fonte única: seed-demo.js)
+        run: npm run demo:gerar
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+
+      - name: Empacotar a pasta demo/ como artefato
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: demo
+
+      - name: Publicar
+        id: publicacao
+        uses: actions/deploy-pages@v4
