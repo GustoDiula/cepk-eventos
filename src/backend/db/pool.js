@@ -12,7 +12,17 @@ function obterPool() {
       erro.codigo = 'BANCO_NAO_CONFIGURADO';
       throw erro;
     }
-    pool = new Pool({ connectionString: url, max: 10 });
+    // Hospedagens em nuvem (D-027: Neon) exigem TLS — sinalizado por
+    // sslmode= na própria DATABASE_URL; o PostgreSQL local não tem sslmode
+    // e continua como sempre. rejectUnauthorized: false = não avalida o
+    // certificado do servidor do banco (padrão com sslmode=require);
+    // pinar a CA do Neon (verify-full) fica como endurecimento futuro.
+    const tlsExigido = /[?&]sslmode=/.test(url);
+    pool = new Pool({
+      connectionString: url,
+      max: 10,
+      ...(tlsExigido ? { ssl: { rejectUnauthorized: false } } : {}),
+    });
     // Erros de conexão não derrubam o processo: não há listener "error" aqui porque
     // o Pool já reentrega o erro ao query chamador.
   }

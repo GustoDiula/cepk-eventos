@@ -10,6 +10,13 @@ const raizFrontend = path.join(__dirname, '..', 'frontend');
 
 const app = express();
 
+// Atrás de rebalanceadores HTTPS da hospedagem (D-027: Render), o Express só
+// conhece o endereço do proxy — sem "trust proxy", o IP do visitante e a
+// detecção de HTTPS viriam errados. Local não tem proxy: fica desligado.
+if (env.ambiente === 'production') {
+  app.set('trust proxy', 1);
+}
+
 // Cabeçalhos de segurança (RNF04). A Content-Security-Policy fica
 // temporariamente DESLIGADA porque as páginas ainda usam scripts inline
 // do protótipo; CSP estrita é pendência da etapa 5 (documentada no plano).

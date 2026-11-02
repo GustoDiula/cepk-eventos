@@ -75,9 +75,10 @@ cepk-eventos/
 ├── docs/
 │   ├── requisitos.md              ← requisitos funcionais/não funcionais e regras de negócio
 │   ├── arquitetura.md             ← arquitetura (v2.0) + §5A perfis e permissões (implementados)
-│   ├── decisoes.md                ← registro de decisões (D-001..D-026)
+│   ├── decisoes.md                ← registro de decisões (D-001..D-027)
 │   ├── modelo-de-dados.md         ← v1.1 (IMPLEMENTADA, etapas 2–5)
 │   ├── api.md                     ← v1.1: §3.0 endpoints reais + contrato futuro (etapas 6–9)
+│   ├── hospedagem.md              ← passo a passo Render + Neon do produto real (D-027)
 │   └── pwa.md / plano-de-desenvolvimento.md
 ├── src/
 │   ├── backend/
@@ -117,6 +118,14 @@ cepk-eventos/
 > (pasta `demo/`, gerada por `npm run demo:gerar` + workflow do Actions). O
 > login é substituído por ESCOLHA DE PERFIL (sem senha); inscrições desabilitadas
 > com aviso; sem service worker/manifest. Produto real e PWA (etapas 6–10) NÃO mudam.
+
+> Atualização 2026-11-02: D-027 — o produto real ganha HOSPEDAGEM (Render web
+> service gratuito + Neon PostgreSQL gratuito; passo a passo em `docs/hospedagem.md`).
+> Mudanças mínimas no backend: `trust proxy` só em produção, TLS no pool quando a
+> `DATABASE_URL` pedir `sslmode`, e o script `npm run subir:producao` (seed
+> idempotente + servidor no boot — o Render free não tem terminal). Segredos de
+> produção vivem SÓ no painel do Render. O deploy real espera o autor criar as
+> contas nas plataformas.
 
 > Atualize esta seção sempre que a estrutura do repositório mudar
 > (explique a alteração ao autor antes, conforme a regra 2).

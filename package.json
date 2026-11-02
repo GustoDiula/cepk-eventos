@@ -6,12 +6,14 @@
   "scripts": {
     "dev": "node --watch --env-file-if-exists=.env src/backend/server.js",
     "start": "node --env-file-if-exists=.env src/backend/server.js",
+    "subir:producao": "node --env-file-if-exists=.env src/backend/db/seed-demo.js && node --env-file-if-exists=.env src/backend/server.js",
     "test": "node --env-file-if-exists=.env --test \"tests/**/*.test.mjs\"",
     "db:aplicar": "node --env-file-if-exists=.env src/backend/db/seed-demo.js --schema-only",
     "db:demonstracao": "node --env-file-if-exists=.env src/backend/db/seed-demo.js",
     "pg:start": "powershell -ExecutionPolicy Bypass -File scripts/pgsql-start.ps1",
     "pg:stop": "powershell -ExecutionPolicy Bypass -File scripts/pgsql-stop.ps1",
-    "demo:gerar": "node scripts/gerar-demo.cjs"
+    "demo:gerar": "node scripts/gerar-demo.cjs",
+    "segredo": "node scripts/gerar-segredo.cjs"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
