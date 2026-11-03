@@ -8,7 +8,11 @@ function obterPool() {
   if (!pool) {
     const url = process.env.DATABASE_URL;
     if (!url) {
-      const erro = new Error('DATABASE_URL não configurado (.env).');
+      const erro = new Error(
+        'DATABASE_URL nao configurado. Em DEV/TEST vem do .env local (fora do '
+        + 'Git); em hospedagem (D-027 - Render) vem da tabela Environment do '
+        + 'painel do servico (com Save Changes).'
+      );
       erro.codigo = 'BANCO_NAO_CONFIGURADO';
       throw erro;
     }

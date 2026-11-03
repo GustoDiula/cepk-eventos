@@ -57,8 +57,10 @@ function hashDaSenhaDemo() {
   const senha = process.env.SENHA_DEMO;
   if (!senha) {
     throw new Error(
-      'SENHA_DEMO ausente no .env. Defina a senha inicial das contas de demonstração ' +
-      'no seu arquivo .env local (fora do Git) e rode npm run seed-demo novamente.'
+      'SENHA_DEMO ausente. É a senha inicial das contas de demonstração e '
+      + 'vivo APENAS em segredo: em DEV/TEST, no .env local (fora do Git); '
+      + 'em hospedagem (D-027 - Render), na tabela Environment do painel do '
+      + 'serviço (lembre de clicar em Save Changes). Depois, rode de novo.'
     );
   }
   return bcrypt.hashSync(senha, 10);
