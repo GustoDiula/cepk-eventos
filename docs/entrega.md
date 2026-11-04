@@ -44,7 +44,7 @@ Colégio Estadual Presidente Kennedy (CEPK).
 
 | Exigência do trabalho | Atendimento | Evidência |
 |---|---|---|
-| Projeto de IA + agente especializado em Eng. de Requisitos | Feito com **OpenCode** (rota "preferencial" do enunciado) | `AGENTS.md` (instruções permanentes do agente) + `docs/requisitos.md` |
+| Projeto de IA + agente especializado em Eng. de Requisitos | Feito com **OpenCode** (rota "preferencial" do enunciado); instruções do MESMO agente preparadas também para **Projeto no ChatGPT** | `AGENTS.md` (instruções permanentes do agente) + `docs/instrucoes-chatgpt.md` (texto pronto p/ colar no ChatGPT) + `docs/requisitos.md` |
 | Definir requisitos, funcionalidades e planejamento | Feito ANTES de programar (decisão D-005) | `docs/requisitos.md` · `docs/plano-de-desenvolvimento.md` (etapas 0–5 executadas) · `docs/decisoes.md` (D-001..D-027: data, motivo, status) |
 | Desenvolver a aplicação utilizando IA | Toda a implementação com o agente | histórico do repositório (`git log`) |
 | Experimentar diferentes modelos de IA e comparar | ⚠️ **Pendente de documentação pelo autor** | (o agente do projeto é único: OpenCode + modelo GLM) — o autor precisa registrar a comparação que fizer com outro modelo (ex.: ChatGPT) para este item |
