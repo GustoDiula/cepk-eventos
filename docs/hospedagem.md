@@ -1,6 +1,9 @@
 # Hospedagem do produto real — Render + Neon (D-027)
 
 v1.0 · 2026-11-02 · decisão D-027 (docs/decisoes.md)
+Atualização 2026-11-03: primeiro deploy VERDE e bateria de verificação executada
+(health ok/banco ok, páginas 200, API 401 sem sessão, manifest e SW com
+`Service-Worker-Allowed: /`) — o produto real está acessível na URL do serviço.
 
 Abordagem: subir o **produto REAL** (Node.js + Express + PostgreSQL) numa
 hospedagem na nuvem com plano gratuito, para login real, calendário por vínculo

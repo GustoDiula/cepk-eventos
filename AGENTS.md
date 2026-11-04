@@ -124,8 +124,8 @@ cepk-eventos/
 > Mudanças mínimas no backend: `trust proxy` só em produção, TLS no pool quando a
 > `DATABASE_URL` pedir `sslmode`, e o script `npm run subir:producao` (seed
 > idempotente + servidor no boot — o Render free não tem terminal). Segredos de
-> produção vivem SÓ no painel do Render. O deploy real espera o autor criar as
-> contas nas plataformas.
+> produção vivem SÓ no painel do Render. Produto real NO AR desde 03/11: primeiro
+> deploy verde + bateria de verificação executada (health, páginas, 401, PWA).
 
 > Atualize esta seção sempre que a estrutura do repositório mudar
 > (explique a alteração ao autor antes, conforme a regra 2).
