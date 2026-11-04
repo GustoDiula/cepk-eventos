@@ -74,6 +74,7 @@ cepk-eventos/
 │   └── pgsql-stop.ps1             ← para o PostgreSQL portátil
 ├── docs/
 │   ├── requisitos.md              ← requisitos funcionais/não funcionais e regras de negócio
+│   ├── entrega.md                 ← mapeamento exigência → evidência + roteiro de apresentação
 │   ├── arquitetura.md             ← arquitetura (v2.0) + §5A perfis e permissões (implementados)
 │   ├── decisoes.md                ← registro de decisões (D-001..D-027)
 │   ├── modelo-de-dados.md         ← v1.1 (IMPLEMENTADA, etapas 2–5)
